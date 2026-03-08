@@ -1,11 +1,13 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BookOpen, Home, FileQuestion, FilePlus, History, BarChart3,
   TrendingUp, FileText, LineChart, Search, StickyNote,
   Library, BookMarked, ChevronDown, ChevronRight, Menu, X, LogOut, User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NavItem {
   label: string;
@@ -42,9 +44,23 @@ const performanceChildren = [
 export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["QBank"]);
   const [perfExpanded, setPerfExpanded] = useState(false);
+  const [profileName, setProfileName] = useState("Student");
+  const [profileEmail, setProfileEmail] = useState("");
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+      return;
+    }
+    if (user) {
+      setProfileEmail(user.email || "");
+      setProfileName(user.user_metadata?.username || user.email?.split("@")[0] || "Student");
+    }
+  }, [user, loading, navigate]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -54,12 +70,18 @@ export default function DashboardLayout() {
     );
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("medprep_user");
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 
-  const user = JSON.parse(localStorage.getItem("medprep_user") || '{"name":"Student","email":"student@medprep.com"}');
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -189,8 +211,8 @@ export default function DashboardLayout() {
                 <User className="h-4 w-4 text-sidebar-foreground" />
               </div>
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium text-sidebar-foreground">{user.name}</p>
-                <p className="truncate text-xs text-sidebar-foreground/60">{user.email}</p>
+                <p className="truncate text-sm font-medium text-sidebar-foreground">{profileName}</p>
+                <p className="truncate text-xs text-sidebar-foreground/60">{profileEmail}</p>
               </div>
             </div>
           </div>
@@ -205,7 +227,7 @@ export default function DashboardLayout() {
             <button onClick={() => setSidebarOpen(!sidebarOpen)}>
               {sidebarOpen ? <X className="h-5 w-5 text-muted-foreground" /> : <Menu className="h-5 w-5 text-muted-foreground" />}
             </button>
-            <span className="text-lg font-semibold">Welcome, {user.name}</span>
+            <span className="text-lg font-semibold">Welcome, {profileName}</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>
