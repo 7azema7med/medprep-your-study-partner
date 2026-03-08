@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     // Create the super admin user
     // In production, use environment variables: ADMIN_EMAIL, ADMIN_PASSWORD
     const { data: newUser, error } = await supabaseAdmin.auth.admin.createUser({
-      email: "hazem@medprep.com",
+      email: "2341interstellar@gmail.com",
       password: "1232004",
       email_confirm: true,
       user_metadata: { username: "Hazem", force_password_change: true },
