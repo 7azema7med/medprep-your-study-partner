@@ -108,7 +108,7 @@ export default function CreateTest() {
   };
 
   const handleGenerateTest = async () => {
-    if (!user || numQuestions === 0) return;
+    if (!user || (questionMode === "standard" && numQuestions === 0) || (questionMode === "custom" && customQuestionIds.length === 0)) return;
 
     const { data: test, error } = await supabase
       .from("tests")
