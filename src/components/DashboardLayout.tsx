@@ -227,7 +227,7 @@ export default function DashboardLayout() {
             <button onClick={() => setSidebarOpen(!sidebarOpen)}>
               {sidebarOpen ? <X className="h-5 w-5 text-muted-foreground" /> : <Menu className="h-5 w-5 text-muted-foreground" />}
             </button>
-            <span className="text-lg font-semibold">Welcome, {user.name}</span>
+            <span className="text-lg font-semibold">Welcome, {profileName}</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>
