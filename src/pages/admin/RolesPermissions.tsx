@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Key, Shield } from "lucide-react";
+import { Key } from "lucide-react";
+import type { Database } from "@/integrations/supabase/types";
+
+type AppRole = Database["public"]["Tables"]["role_permissions"]["Row"]["role"];
 import { supabase } from "@/integrations/supabase/client";
 
 const ALL_ROLES = ["super_admin", "admin", "editor", "moderator", "support", "content_manager", "question_reviewer"];
