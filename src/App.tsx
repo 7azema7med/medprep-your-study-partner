@@ -41,6 +41,7 @@ import QuestionManagement from "./pages/admin/QuestionManagement";
 import NoteManagement from "./pages/admin/NoteManagement";
 import ExamManagement from "./pages/admin/ExamManagement";
 import ActivationCodes from "./pages/admin/ActivationCodes";
+import QuestionUpload from "./pages/admin/QuestionUpload";
 import PlansSubscriptions from "./pages/admin/PlansSubscriptions";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AuditLogs from "./pages/admin/AuditLogs";
@@ -88,6 +89,7 @@ const App = () => (
               <Route path="admins" element={<AdminManagement />} />
               <Route path="roles" element={<RolesPermissions />} />
               <Route path="questions" element={<QuestionManagement />} />
+              <Route path="upload-questions" element={<QuestionUpload />} />
               <Route path="notes" element={<NoteManagement />} />
               <Route path="exams" element={<ExamManagement />} />
               <Route path="codes" element={<ActivationCodes />} />
