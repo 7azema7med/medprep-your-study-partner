@@ -41,6 +41,7 @@ import QuestionManagement from "./pages/admin/QuestionManagement";
 import NoteManagement from "./pages/admin/NoteManagement";
 import ExamManagement from "./pages/admin/ExamManagement";
 import ActivationCodes from "./pages/admin/ActivationCodes";
+import QuestionUpload from "./pages/admin/QuestionUpload";
 import PlansSubscriptions from "./pages/admin/PlansSubscriptions";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AuditLogs from "./pages/admin/AuditLogs";
