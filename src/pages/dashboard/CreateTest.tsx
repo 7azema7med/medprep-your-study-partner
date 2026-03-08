@@ -35,6 +35,7 @@ export default function CreateTest() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>(["unused"]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [selectedSystems, setSelectedSystems] = useState<string[]>([]);
+  const [customQuestionIds, setCustomQuestionIds] = useState<string[]>([]);
   const [selectAllSubjects, setSelectAllSubjects] = useState(false);
   const [selectAllSystems, setSelectAllSystems] = useState(false);
   const [numQuestions, setNumQuestions] = useState(0);
