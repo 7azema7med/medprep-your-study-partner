@@ -7,6 +7,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Pricing from "./pages/Pricing";
 import Features from "./pages/Features";
 import WhyUs from "./pages/WhyUs";
@@ -23,6 +25,7 @@ import SearchQuestions from "./pages/dashboard/SearchQuestions";
 import Notes from "./pages/dashboard/Notes";
 import MedicalLibrary from "./pages/dashboard/MedicalLibrary";
 import MyNotebook from "./pages/dashboard/MyNotebook";
+import Settings from "./pages/dashboard/Settings";
 import ExamInterface from "./pages/dashboard/ExamInterface";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +42,8 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/features" element={<Features />} />
             <Route path="/why-us" element={<WhyUs />} />
@@ -55,6 +60,7 @@ const App = () => (
               <Route path="notes" element={<Notes />} />
               <Route path="medical-library" element={<MedicalLibrary />} />
               <Route path="my-notebook" element={<MyNotebook />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
             <Route path="/dashboard/exam/:testId" element={<ExamInterface />} />
             <Route path="*" element={<NotFound />} />
