@@ -46,7 +46,7 @@ export default function QuestionUpload() {
   const [rawText, setRawText] = useState("");
   const [parsed, setParsed] = useState<ParsedQuestion[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
-  const [defaultSubject, setDefaultSubject] = useState("");
+  const [defaultSubject, setDefaultSubject] = useState("none");
   const [defaultDifficulty, setDefaultDifficulty] = useState("medium");
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: any[] } | null>(null);
@@ -109,7 +109,7 @@ export default function QuestionUpload() {
         question_text: q.question_text,
         explanation: q.explanation,
         difficulty: q.difficulty,
-        subject_id: q.subject_id || null,
+        subject_id: q.subject_id && q.subject_id !== "none" ? q.subject_id : null,
         choices: q.choices,
       })));
       setResult(res);
@@ -175,7 +175,7 @@ export default function QuestionUpload() {
                 <Select value={defaultSubject} onValueChange={setDefaultSubject}>
                   <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
