@@ -41,7 +41,7 @@ export default function ActivationCodes() {
         count: form.count,
         duration_days: form.duration_days,
         max_uses: form.max_uses,
-        plan_id: form.plan_id || null,
+        plan_id: form.plan_id && form.plan_id !== "none" ? form.plan_id : null,
       });
       toast.success(`Generated ${form.count} code(s)`);
       setCreateOpen(false);
@@ -110,7 +110,7 @@ export default function ActivationCodes() {
                   <Select value={form.plan_id} onValueChange={v => setForm(f => ({ ...f, plan_id: v }))}>
                     <SelectTrigger><SelectValue placeholder="No plan" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {plans.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
