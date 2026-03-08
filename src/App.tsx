@@ -89,6 +89,7 @@ const App = () => (
               <Route path="admins" element={<AdminManagement />} />
               <Route path="roles" element={<RolesPermissions />} />
               <Route path="questions" element={<QuestionManagement />} />
+              <Route path="upload-questions" element={<QuestionUpload />} />
               <Route path="notes" element={<NoteManagement />} />
               <Route path="exams" element={<ExamManagement />} />
               <Route path="codes" element={<ActivationCodes />} />
