@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
       action: "admin_bootstrap",
       entity_type: "user",
       entity_id: newUser.user.id,
-      new_values: { email: "hazem@medprep.com", role: "super_admin" },
+      new_values: { email: "2341interstellar@gmail.com", role: "super_admin" },
     });
 
     return new Response(JSON.stringify({ message: "Super admin created", user_id: newUser.user.id }), {
