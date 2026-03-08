@@ -468,6 +468,27 @@ export type Database = {
           },
         ]
       }
+      question_sets: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       question_strikeouts: {
         Row: {
           choice_id: string
@@ -526,31 +547,67 @@ export type Database = {
           difficulty: string | null
           explanation: string | null
           id: string
+          is_active: boolean | null
+          public_id: number
+          question_set_id: string | null
           question_text: string
           subject_id: string | null
+          system_id: string | null
+          topic_id: string | null
         }
         Insert: {
           created_at?: string
           difficulty?: string | null
           explanation?: string | null
           id?: string
+          is_active?: boolean | null
+          public_id?: number
+          question_set_id?: string | null
           question_text: string
           subject_id?: string | null
+          system_id?: string | null
+          topic_id?: string | null
         }
         Update: {
           created_at?: string
           difficulty?: string | null
           explanation?: string | null
           id?: string
+          is_active?: boolean | null
+          public_id?: number
+          question_set_id?: string | null
           question_text?: string
           subject_id?: string | null
+          system_id?: string | null
+          topic_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "questions_question_set_id_fkey"
+            columns: ["question_set_id"]
+            isOneToOne: false
+            referencedRelation: "question_sets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "questions_subject_id_fkey"
             columns: ["subject_id"]
             isOneToOne: false
             referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_system_id_fkey"
+            columns: ["system_id"]
+            isOneToOne: false
+            referencedRelation: "systems"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
@@ -673,6 +730,24 @@ export type Database = {
           },
         ]
       }
+      systems: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       test_questions: {
         Row: {
           answered_at: string | null
@@ -738,11 +813,15 @@ export type Database = {
         Row: {
           completed_at: string | null
           created_at: string
+          custom_question_ids: Json | null
+          filters_json: Json | null
           id: string
           mode: string
           num_questions: number
+          public_id: number
           question_mode: string
           score: number | null
+          source_mode: string | null
           status: string
           test_name: string | null
           time_spent: number | null
@@ -751,11 +830,15 @@ export type Database = {
         Insert: {
           completed_at?: string | null
           created_at?: string
+          custom_question_ids?: Json | null
+          filters_json?: Json | null
           id?: string
           mode?: string
           num_questions: number
+          public_id?: number
           question_mode?: string
           score?: number | null
+          source_mode?: string | null
           status?: string
           test_name?: string | null
           time_spent?: number | null
@@ -764,15 +847,37 @@ export type Database = {
         Update: {
           completed_at?: string | null
           created_at?: string
+          custom_question_ids?: Json | null
+          filters_json?: Json | null
           id?: string
           mode?: string
           num_questions?: number
+          public_id?: number
           question_mode?: string
           score?: number | null
+          source_mode?: string | null
           status?: string
           test_name?: string | null
           time_spent?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      topics: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
