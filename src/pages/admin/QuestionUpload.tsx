@@ -46,7 +46,7 @@ export default function QuestionUpload() {
   const [rawText, setRawText] = useState("");
   const [parsed, setParsed] = useState<ParsedQuestion[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
-  const [defaultSubject, setDefaultSubject] = useState("");
+  const [defaultSubject, setDefaultSubject] = useState("none");
   const [defaultDifficulty, setDefaultDifficulty] = useState("medium");
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<{ success: number; errors: any[] } | null>(null);
