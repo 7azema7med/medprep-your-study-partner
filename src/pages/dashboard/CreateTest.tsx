@@ -305,7 +305,10 @@ export default function CreateTest() {
       <div className="mt-6">
         <Button
           onClick={handleGenerateTest}
-          disabled={numQuestions === 0 || (selectedSubjects.length === 0 && selectedSystems.length === 0)}
+          disabled={
+            (questionMode === "standard" && (numQuestions === 0 || (selectedSubjects.length === 0 && selectedSystems.length === 0))) ||
+            (questionMode === "custom" && customQuestionIds.length === 0)
+          }
           className="bg-primary hover:bg-primary/90"
         >
           Generate Test
