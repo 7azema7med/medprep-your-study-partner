@@ -6,9 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { BookOpen } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -22,17 +26,36 @@ export default function Signup() {
   const update = (key: string, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
       return;
     }
-    localStorage.setItem(
-      "medprep_user",
-      JSON.stringify({ email: form.email, name: form.username })
-    );
-    navigate("/dashboard");
+
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: {
+        data: {
+          username: form.username,
+          country: form.country,
+          phone: form.phone,
+          activation_code: form.activationCode,
+        },
+      },
+    });
+
+    if (error) {
+      toast({ title: "Signup failed", description: error.message, variant: "destructive" });
+      setLoading(false);
+      return;
+    }
+
+    toast({ title: "Account created!", description: "Please check your email to verify your account." });
+    navigate("/login");
   };
 
   return (
@@ -50,87 +73,43 @@ export default function Signup() {
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  placeholder="johndoe"
-                  value={form.username}
-                  onChange={(e) => update("username", e.target.value)}
-                  required
-                />
+                <Input id="username" placeholder="johndoe" value={form.username} onChange={(e) => update("username", e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={(e) => update("email", e.target.value)}
-                  required
-                />
+                <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={(e) => update("email", e.target.value)} required />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={form.password}
-                    onChange={(e) => update("password", e.target.value)}
-                    required
-                  />
+                  <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={(e) => update("password", e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    value={form.confirmPassword}
-                    onChange={(e) => update("confirmPassword", e.target.value)}
-                    required
-                  />
+                  <Input id="confirmPassword" type="password" placeholder="••••••••" value={form.confirmPassword} onChange={(e) => update("confirmPassword", e.target.value)} required />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="country">Country</Label>
-                  <Input
-                    id="country"
-                    placeholder="United States"
-                    value={form.country}
-                    onChange={(e) => update("country", e.target.value)}
-                  />
+                  <Input id="country" placeholder="United States" value={form.country} onChange={(e) => update("country", e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    placeholder="+1 234 567 890"
-                    value={form.phone}
-                    onChange={(e) => update("phone", e.target.value)}
-                  />
+                  <Input id="phone" placeholder="+1 234 567 890" value={form.phone} onChange={(e) => update("phone", e.target.value)} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="activationCode">Activation Code (optional)</Label>
-                <Input
-                  id="activationCode"
-                  placeholder="Enter code if available"
-                  value={form.activationCode}
-                  onChange={(e) => update("activationCode", e.target.value)}
-                />
+                <Input id="activationCode" placeholder="Enter code if available" value={form.activationCode} onChange={(e) => update("activationCode", e.target.value)} />
               </div>
-              <Button type="submit" className="w-full">
-                Create Account
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/login" className="text-primary hover:underline">
-                Log in
-              </Link>
+              <Link to="/login" className="text-primary hover:underline">Log in</Link>
             </p>
           </CardContent>
         </Card>
