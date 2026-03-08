@@ -109,7 +109,7 @@ export default function QuestionUpload() {
         question_text: q.question_text,
         explanation: q.explanation,
         difficulty: q.difficulty,
-        subject_id: q.subject_id || null,
+        subject_id: q.subject_id && q.subject_id !== "none" ? q.subject_id : null,
         choices: q.choices,
       })));
       setResult(res);
