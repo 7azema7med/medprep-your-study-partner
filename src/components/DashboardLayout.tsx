@@ -44,9 +44,23 @@ const performanceChildren = [
 export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["QBank"]);
   const [perfExpanded, setPerfExpanded] = useState(false);
+  const [profileName, setProfileName] = useState("Student");
+  const [profileEmail, setProfileEmail] = useState("");
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+      return;
+    }
+    if (user) {
+      setProfileEmail(user.email || "");
+      setProfileName(user.user_metadata?.username || user.email?.split("@")[0] || "Student");
+    }
+  }, [user, loading, navigate]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -56,12 +70,18 @@ export default function DashboardLayout() {
     );
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("medprep_user");
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 
-  const user = JSON.parse(localStorage.getItem("medprep_user") || '{"name":"Student","email":"student@medprep.com"}');
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
