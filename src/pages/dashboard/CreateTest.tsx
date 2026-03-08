@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Plus } from "lucide-react";
+import { CustomModePanel } from "@/components/dashboard/create-test/CustomModePanel";
 
 interface Subject {
   id: string;
