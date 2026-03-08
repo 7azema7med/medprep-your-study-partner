@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
 
     // Check if Hazem already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const hazem = existingUsers?.users?.find(u => u.email === "hazem@medprep.com");
+    const hazem = existingUsers?.users?.find(u => u.email === "2341interstellar@gmail.com");
 
     if (hazem) {
       // Ensure role exists
