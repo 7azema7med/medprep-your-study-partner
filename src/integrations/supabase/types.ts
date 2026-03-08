@@ -49,6 +49,35 @@ export type Database = {
           },
         ]
       }
+      flashcards: {
+        Row: {
+          created_at: string
+          id: string
+          question_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          question_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          question_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flashcards_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           content: string | null
@@ -119,6 +148,163 @@ export type Database = {
           username?: string
         }
         Relationships: []
+      }
+      question_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          issue_type: string
+          message: string
+          question_id: string
+          status: string
+          test_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issue_type?: string
+          message: string
+          question_id: string
+          status?: string
+          test_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issue_type?: string
+          message?: string
+          question_id?: string
+          status?: string
+          test_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_feedback_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_feedback_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_highlights: {
+        Row: {
+          color: string | null
+          created_at: string
+          end_offset: number | null
+          id: string
+          question_id: string
+          selected_text: string
+          start_offset: number | null
+          target_id: string | null
+          target_type: string
+          test_id: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          end_offset?: number | null
+          id?: string
+          question_id: string
+          selected_text: string
+          start_offset?: number | null
+          target_id?: string | null
+          target_type?: string
+          test_id?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          end_offset?: number | null
+          id?: string
+          question_id?: string
+          selected_text?: string
+          start_offset?: number | null
+          target_id?: string | null
+          target_type?: string
+          test_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_highlights_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_highlights_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_strikeouts: {
+        Row: {
+          choice_id: string
+          created_at: string
+          id: string
+          is_struck: boolean | null
+          question_id: string
+          test_id: string | null
+          user_id: string
+        }
+        Insert: {
+          choice_id: string
+          created_at?: string
+          id?: string
+          is_struck?: boolean | null
+          question_id: string
+          test_id?: string | null
+          user_id: string
+        }
+        Update: {
+          choice_id?: string
+          created_at?: string
+          id?: string
+          is_struck?: boolean | null
+          question_id?: string
+          test_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_strikeouts_choice_id_fkey"
+            columns: ["choice_id"]
+            isOneToOne: false
+            referencedRelation: "answer_choices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_strikeouts_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_strikeouts_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       questions: {
         Row: {
