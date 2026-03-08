@@ -117,7 +117,9 @@ export default function CreateTest() {
         test_name: testName || null,
         mode,
         question_mode: questionMode,
-        num_questions: numQuestions,
+        num_questions: questionMode === "custom" ? customQuestionIds.length : numQuestions,
+        source_mode: questionMode,
+        custom_question_ids: questionMode === "custom" ? customQuestionIds : null,
       })
       .select()
       .single();
