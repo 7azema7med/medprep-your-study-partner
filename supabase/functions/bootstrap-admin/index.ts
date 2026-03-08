@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
 
     // Check if Hazem already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const hazem = existingUsers?.users?.find(u => u.email === "hazem@medprep.com");
+    const hazem = existingUsers?.users?.find(u => u.email === "2341interstellar@gmail.com");
 
     if (hazem) {
       // Ensure role exists
@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     // Create the super admin user
     // In production, use environment variables: ADMIN_EMAIL, ADMIN_PASSWORD
     const { data: newUser, error } = await supabaseAdmin.auth.admin.createUser({
-      email: "hazem@medprep.com",
+      email: "2341interstellar@gmail.com",
       password: "1232004",
       email_confirm: true,
       user_metadata: { username: "Hazem", force_password_change: true },
@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
       action: "admin_bootstrap",
       entity_type: "user",
       entity_id: newUser.user.id,
-      new_values: { email: "hazem@medprep.com", role: "super_admin" },
+      new_values: { email: "2341interstellar@gmail.com", role: "super_admin" },
     });
 
     return new Response(JSON.stringify({ message: "Super admin created", user_id: newUser.user.id }), {
