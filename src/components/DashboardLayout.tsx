@@ -211,7 +211,7 @@ export default function DashboardLayout() {
                 <User className="h-4 w-4 text-sidebar-foreground" />
               </div>
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium text-sidebar-foreground">{user.name}</p>
+                <p className="truncate text-sm font-medium text-sidebar-foreground">{profileName}</p>
                 <p className="truncate text-xs text-sidebar-foreground/60">{user.email}</p>
               </div>
             </div>
