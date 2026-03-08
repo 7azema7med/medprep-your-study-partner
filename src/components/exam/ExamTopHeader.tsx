@@ -36,9 +36,9 @@ export default function ExamTopHeader() {
           <div className="text-sm font-semibold leading-tight">
             Item {currentIndex + 1} of {questions.length}
           </div>
-          {currentQ?.external_question_id && (
+          {currentQ?.public_id && (
             <div className="text-[10px] text-white/60 leading-tight">
-              Question Id: {currentQ.external_question_id}
+              Question Id: {currentQ.public_id}
             </div>
           )}
         </div>

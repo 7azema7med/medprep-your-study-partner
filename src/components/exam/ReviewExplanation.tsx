@@ -1,6 +1,8 @@
 import type { ExamQuestion } from "@/lib/exam-types";
 import { useExamStore } from "@/stores/exam-store";
-import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
+import { CheckCircle2, XCircle, Lightbulb, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface Props {
   question: ExamQuestion;
@@ -13,8 +15,28 @@ export default function ReviewExplanation({ question }: Props) {
   const correctChoice = question.choices.find((c) => c.is_correct);
   const isCorrect = selectedChoice?.is_correct;
 
+  const copyQuestionId = () => {
+    if (question.public_id) {
+      navigator.clipboard.writeText(question.public_id.toString());
+      toast.success("Question ID copied to clipboard");
+    }
+  };
+
   return (
     <div className="mt-6 space-y-4">
+      {/* Question ID Banner */}
+      {question.public_id && (
+        <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            Question ID: <span className="text-foreground">{question.public_id}</span>
+          </span>
+          <Button variant="ghost" size="sm" onClick={copyQuestionId} className="h-8 text-xs">
+            <Copy className="mr-2 h-3.5 w-3.5" />
+            Copy ID
+          </Button>
+        </div>
+      )}
+
       {/* Result banner */}
       <div className={`flex items-center gap-3 rounded-lg p-4 ${
         isCorrect

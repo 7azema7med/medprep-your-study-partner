@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Plus } from "lucide-react";
+import { CustomModePanel } from "@/components/dashboard/create-test/CustomModePanel";
 
 interface Subject {
   id: string;
@@ -34,6 +35,7 @@ export default function CreateTest() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>(["unused"]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [selectedSystems, setSelectedSystems] = useState<string[]>([]);
+  const [customQuestionIds, setCustomQuestionIds] = useState<string[]>([]);
   const [selectAllSubjects, setSelectAllSubjects] = useState(false);
   const [selectAllSystems, setSelectAllSystems] = useState(false);
   const [numQuestions, setNumQuestions] = useState(0);
@@ -106,7 +108,7 @@ export default function CreateTest() {
   };
 
   const handleGenerateTest = async () => {
-    if (!user || numQuestions === 0) return;
+    if (!user || (questionMode === "standard" && numQuestions === 0) || (questionMode === "custom" && customQuestionIds.length === 0)) return;
 
     const { data: test, error } = await supabase
       .from("tests")
@@ -115,7 +117,9 @@ export default function CreateTest() {
         test_name: testName || null,
         mode,
         question_mode: questionMode,
-        num_questions: numQuestions,
+        num_questions: questionMode === "custom" ? customQuestionIds.length : numQuestions,
+        source_mode: questionMode,
+        custom_question_ids: questionMode === "custom" ? customQuestionIds : null,
       })
       .select()
       .single();
@@ -191,103 +195,120 @@ export default function CreateTest() {
             </button>
           ))}
         </div>
-        <div className="flex flex-wrap gap-4">
-          {questionFilters.map((f) => (
-            <label key={f.key} className="flex cursor-pointer items-center gap-2">
-              <Checkbox
-                checked={selectedFilters.includes(f.key)}
-                onCheckedChange={() => toggleFilter(f.key)}
-              />
-              <span className={`text-sm ${selectedFilters.includes(f.key) ? "text-foreground" : "text-muted-foreground"}`}>
-                {f.label}
-              </span>
-              <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
-                {filterCounts[f.key]}
-              </span>
-            </label>
-          ))}
-        </div>
+        
+        {questionMode === "standard" && (
+          <div className="flex flex-wrap gap-4 mt-4">
+            {questionFilters.map((f) => (
+              <label key={f.key} className="flex cursor-pointer items-center gap-2">
+                <Checkbox
+                  checked={selectedFilters.includes(f.key)}
+                  onCheckedChange={() => toggleFilter(f.key)}
+                />
+                <span className={`text-sm ${selectedFilters.includes(f.key) ? "text-foreground" : "text-muted-foreground"}`}>
+                  {f.label}
+                </span>
+                <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
+                  {filterCounts[f.key]}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
       </Section>
 
-      {/* Subjects */}
-      <Section>
-        <label className="flex cursor-pointer items-center gap-2 mb-3">
-          <Checkbox
-            checked={selectAllSubjects}
-            onCheckedChange={(checked) => handleSelectAllSubjects(!!checked)}
-          />
-          <span className="font-semibold text-sm text-foreground">Subjects</span>
-        </label>
-        <div className="grid grid-cols-2 gap-x-12 gap-y-2">
-          {subjects.map((s) => (
-            <label key={s.id} className="flex cursor-pointer items-center gap-2">
+      {questionMode === "standard" ? (
+        <>
+          {/* Subjects */}
+          <Section>
+            <label className="flex cursor-pointer items-center gap-2 mb-3">
               <Checkbox
-                checked={selectedSubjects.includes(s.id)}
-                onCheckedChange={() => toggleSubject(s.id)}
+                checked={selectAllSubjects}
+                onCheckedChange={(checked) => handleSelectAllSubjects(!!checked)}
               />
-              <span className="text-sm text-muted-foreground flex-1">{s.name}</span>
-              <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
-                {s.question_count}
-              </span>
+              <span className="font-semibold text-sm text-foreground">Subjects</span>
             </label>
-          ))}
-        </div>
-      </Section>
+            <div className="grid grid-cols-2 gap-x-12 gap-y-2">
+              {subjects.map((s) => (
+                <label key={s.id} className="flex cursor-pointer items-center gap-2">
+                  <Checkbox
+                    checked={selectedSubjects.includes(s.id)}
+                    onCheckedChange={() => toggleSubject(s.id)}
+                  />
+                  <span className="text-sm text-muted-foreground flex-1">{s.name}</span>
+                  <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
+                    {s.question_count}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </Section>
 
-      {/* Systems */}
-      <Section>
-        <label className="flex cursor-pointer items-center gap-2 mb-3">
-          <Checkbox
-            checked={selectAllSystems}
-            onCheckedChange={(checked) => handleSelectAllSystems(!!checked)}
-          />
-          <span className="font-semibold text-sm text-foreground">Systems</span>
-        </label>
-        <div className="grid grid-cols-2 gap-x-12 gap-y-2">
-          {systems.map((s) => (
-            <label key={s.id} className="flex cursor-pointer items-center gap-2">
+          {/* Systems */}
+          <Section>
+            <label className="flex cursor-pointer items-center gap-2 mb-3">
               <Checkbox
-                checked={selectedSystems.includes(s.id)}
-                onCheckedChange={() => toggleSystem(s.id)}
+                checked={selectAllSystems}
+                onCheckedChange={(checked) => handleSelectAllSystems(!!checked)}
               />
-              <span className="text-sm text-muted-foreground flex-1">{s.name}</span>
-              <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
-                {s.question_count}
-              </span>
-              <button className="text-muted-foreground hover:text-foreground">
-                <Plus className="h-4 w-4" />
-              </button>
+              <span className="font-semibold text-sm text-foreground">Systems</span>
             </label>
-          ))}
-        </div>
-      </Section>
+            <div className="grid grid-cols-2 gap-x-12 gap-y-2">
+              {systems.map((s) => (
+                <label key={s.id} className="flex cursor-pointer items-center gap-2">
+                  <Checkbox
+                    checked={selectedSystems.includes(s.id)}
+                    onCheckedChange={() => toggleSystem(s.id)}
+                  />
+                  <span className="text-sm text-muted-foreground flex-1">{s.name}</span>
+                  <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
+                    {s.question_count}
+                  </span>
+                  <button className="text-muted-foreground hover:text-foreground">
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </label>
+              ))}
+            </div>
+          </Section>
 
-      {/* Number of Questions */}
-      <Section>
-        <SectionTitle>No. of Questions</SectionTitle>
-        <div className="flex items-center gap-3">
-          <Input
-            type="number"
-            value={numQuestions}
-            onChange={(e) => setNumQuestions(Math.min(Number(e.target.value), maxPerBlock))}
-            className="w-20"
-            min={0}
-            max={maxPerBlock}
+          {/* Number of Questions */}
+          <Section>
+            <SectionTitle>No. of Questions</SectionTitle>
+            <div className="flex items-center gap-3">
+              <Input
+                type="number"
+                value={numQuestions}
+                onChange={(e) => setNumQuestions(Math.min(Number(e.target.value), maxPerBlock))}
+                className="w-20"
+                min={0}
+                max={maxPerBlock}
+              />
+              <span className="text-sm text-muted-foreground">
+                Max Allowed per block{" "}
+                <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
+                  {maxPerBlock}
+                </span>
+              </span>
+            </div>
+          </Section>
+        </>
+      ) : (
+        <Section>
+          <CustomModePanel 
+            maxQuestions={maxPerBlock} 
+            onValidQuestionsChange={setCustomQuestionIds} 
           />
-          <span className="text-sm text-muted-foreground">
-            Max Allowed per block{" "}
-            <span className="inline-flex items-center justify-center rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-xs text-primary">
-              {maxPerBlock}
-            </span>
-          </span>
-        </div>
-      </Section>
+        </Section>
+      )}
 
       {/* Generate Button */}
       <div className="mt-6">
         <Button
           onClick={handleGenerateTest}
-          disabled={numQuestions === 0 || (selectedSubjects.length === 0 && selectedSystems.length === 0)}
+          disabled={
+            (questionMode === "standard" && (numQuestions === 0 || (selectedSubjects.length === 0 && selectedSystems.length === 0))) ||
+            (questionMode === "custom" && customQuestionIds.length === 0)
+          }
           className="bg-primary hover:bg-primary/90"
         >
           Generate Test
