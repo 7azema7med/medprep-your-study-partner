@@ -30,11 +30,12 @@ export default function RolesPermissions() {
     rolePermissions.some(rp => rp.role === role && rp.permission_id === permId);
 
   const togglePermission = async (role: string, permId: string) => {
+    const typedRole = role as AppRole;
     if (hasPermission(role, permId)) {
-      await supabase.from("role_permissions").delete().eq("role", role).eq("permission_id", permId);
+      await supabase.from("role_permissions").delete().eq("role", typedRole).eq("permission_id", permId);
       setRolePermissions(prev => prev.filter(rp => !(rp.role === role && rp.permission_id === permId)));
     } else {
-      const { data } = await supabase.from("role_permissions").insert({ role, permission_id: permId }).select().single();
+      const { data } = await supabase.from("role_permissions").insert({ role: typedRole, permission_id: permId }).select().single();
       if (data) setRolePermissions(prev => [...prev, data]);
     }
   };
