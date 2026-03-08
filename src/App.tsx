@@ -29,6 +29,22 @@ import Settings from "./pages/dashboard/Settings";
 import ExamInterface from "./pages/dashboard/ExamInterface";
 import NotFound from "./pages/NotFound";
 
+// Admin
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import SecurityDashboard from "./pages/admin/SecurityDashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import AdminManagement from "./pages/admin/AdminManagement";
+import RolesPermissions from "./pages/admin/RolesPermissions";
+import QuestionManagement from "./pages/admin/QuestionManagement";
+import NoteManagement from "./pages/admin/NoteManagement";
+import ExamManagement from "./pages/admin/ExamManagement";
+import ActivationCodes from "./pages/admin/ActivationCodes";
+import PlansSubscriptions from "./pages/admin/PlansSubscriptions";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AuditLogs from "./pages/admin/AuditLogs";
+import SiteSettings from "./pages/admin/SiteSettings";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -63,6 +79,21 @@ const App = () => (
               <Route path="settings" element={<Settings />} />
             </Route>
             <Route path="/dashboard/exam/:testId" element={<ExamInterface />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="security" element={<SecurityDashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="admins" element={<AdminManagement />} />
+              <Route path="roles" element={<RolesPermissions />} />
+              <Route path="questions" element={<QuestionManagement />} />
+              <Route path="notes" element={<NoteManagement />} />
+              <Route path="exams" element={<ExamManagement />} />
+              <Route path="codes" element={<ActivationCodes />} />
+              <Route path="plans" element={<PlansSubscriptions />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="audit-logs" element={<AuditLogs />} />
+              <Route path="settings" element={<SiteSettings />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

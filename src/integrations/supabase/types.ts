@@ -14,6 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
+      activation_code_usages: {
+        Row: {
+          activated_at: string
+          code_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          code_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          code_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activation_code_usages_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "activation_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activation_codes: {
+        Row: {
+          assigned_user_id: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          duration_days: number | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          plan_id: string | null
+          used_count: number | null
+        }
+        Insert: {
+          assigned_user_id?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          duration_days?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          plan_id?: string | null
+          used_count?: number | null
+        }
+        Update: {
+          assigned_user_id?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          duration_days?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          plan_id?: string | null
+          used_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activation_codes_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       answer_choices: {
         Row: {
           choice_letter: string
@@ -49,6 +128,45 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       flashcards: {
         Row: {
           created_at: string
@@ -77,6 +195,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      login_history: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          ip_address: string | null
+          success: boolean | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       notes: {
         Row: {
@@ -115,6 +263,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      permissions: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_days: number
+          exam_access: boolean | null
+          id: string
+          is_active: boolean | null
+          name: string
+          notes_access: boolean | null
+          price_cents: number | null
+          qbank_access: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          exam_access?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          notes_access?: boolean | null
+          price_cents?: number | null
+          qbank_access?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          exam_access?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          notes_access?: boolean | null
+          price_cents?: number | null
+          qbank_access?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -341,6 +555,59 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          id: string
+          permission_id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          id?: string
+          permission_id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          id?: string
+          permission_id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_settings: {
+        Row: {
+          category: string | null
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          category?: string | null
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          category?: string | null
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
       subjects: {
         Row: {
           category: string
@@ -361,6 +628,50 @@ export type Database = {
           question_count?: number
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          ends_at: string
+          granted_by: string | null
+          id: string
+          plan_id: string | null
+          source: string | null
+          starts_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          granted_by?: string | null
+          id?: string
+          plan_id?: string | null
+          source?: string | null
+          starts_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          granted_by?: string | null
+          id?: string
+          plan_id?: string | null
+          source?: string | null
+          starts_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_questions: {
         Row: {
@@ -497,15 +808,51 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "super_admin"
+        | "admin"
+        | "editor"
+        | "moderator"
+        | "support"
+        | "content_manager"
+        | "question_reviewer"
+        | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -632,6 +979,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "super_admin",
+        "admin",
+        "editor",
+        "moderator",
+        "support",
+        "content_manager",
+        "question_reviewer",
+        "user",
+      ],
+    },
   },
 } as const
