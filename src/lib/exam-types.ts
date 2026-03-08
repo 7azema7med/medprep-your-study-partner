@@ -5,7 +5,7 @@ export interface ExamQuestion {
   explanation?: string | null;
   educational_objective?: string | null;
   position: number;
-  external_question_id?: string | null;
+  public_id?: number | string | null;
   choices: ExamChoice[];
 }
 
