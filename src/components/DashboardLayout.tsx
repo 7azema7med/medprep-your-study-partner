@@ -33,6 +33,7 @@ const navItems: NavItem[] = [
   },
   { label: "Medical Library", to: "/dashboard/medical-library", icon: Library },
   { label: "My Notebook", to: "/dashboard/my-notebook", icon: BookMarked },
+  { label: "Settings", to: "/dashboard/settings", icon: Settings },
 ];
 
 const performanceChildren = [
