@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import {
   BookOpen, Home, FileQuestion, FilePlus, History, BarChart3,
   TrendingUp, FileText, LineChart, Search, StickyNote,
-  Library, BookMarked, ChevronDown, ChevronRight, Menu, X, LogOut, User
+  Library, BookMarked, ChevronDown, ChevronRight, Menu, X, LogOut, User, Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,6 +33,7 @@ const navItems: NavItem[] = [
   },
   { label: "Medical Library", to: "/dashboard/medical-library", icon: Library },
   { label: "My Notebook", to: "/dashboard/my-notebook", icon: BookMarked },
+  { label: "Settings", to: "/dashboard/settings", icon: Settings },
 ];
 
 const performanceChildren = [
