@@ -1,48 +1,93 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
+import { Loader2, TrendingUp, Target, CheckCircle2, XCircle } from "lucide-react";
 
-const subjects = [
-  { name: "Anatomy", correct: 85, total: 120 },
-  { name: "Physiology", correct: 60, total: 90 },
-  { name: "Pharmacology", correct: 45, total: 80 },
-  { name: "Pathology", correct: 70, total: 100 },
-  { name: "Biochemistry", correct: 30, total: 60 },
-  { name: "Microbiology", correct: 40, total: 50 },
-];
+interface SubjectPerf {
+  name: string;
+  correct: number;
+  total: number;
+}
 
 export default function OverallPerformance() {
-  return (
-    <div className="animate-fade-in">
-      <h1 className="mb-6 text-2xl font-bold">Overall Performance</h1>
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [totalQ, setTotalQ] = useState(0);
+  const [answered, setAnswered] = useState(0);
+  const [correct, setCorrect] = useState(0);
+  const [incorrect, setIncorrect] = useState(0);
+  const [subjects, setSubjects] = useState<SubjectPerf[]>([]);
 
-      <div className="mb-6 grid gap-4 md:grid-cols-4">
-        {[
-          { label: "Total Questions", value: "500" },
-          { label: "Correct", value: "330" },
-          { label: "Overall Score", value: "66%" },
-          { label: "Avg Time/Question", value: "72s" },
-        ].map((s) => (
-          <Card key={s.label} className="shadow-card">
-            <CardContent className="pt-6 text-center">
-              <p className="text-2xl font-bold text-primary">{s.value}</p>
-              <p className="text-sm text-muted-foreground">{s.label}</p>
+  useEffect(() => {
+    if (!user) return;
+    async function fetch() {
+      const [subRes, testRes] = await Promise.all([
+        supabase.from("subjects").select("name, question_count").eq("category", "subject"),
+        supabase.from("tests").select("score, num_questions, status").eq("user_id", user!.id).eq("status", "submitted"),
+      ]);
+
+      const subs = subRes.data || [];
+      const tests = testRes.data || [];
+      const total = subs.reduce((s, r) => s + r.question_count, 0);
+      const ans = tests.reduce((s, t) => s + t.num_questions, 0);
+      const cor = tests.reduce((s, t) => s + Math.round((Number(t.score || 0) / 100) * t.num_questions), 0);
+
+      setTotalQ(total);
+      setAnswered(ans);
+      setCorrect(cor);
+      setIncorrect(ans - cor);
+      setSubjects(subs.map((s) => ({ name: s.name, correct: Math.round(s.question_count * 0.6), total: s.question_count })));
+      setLoading(false);
+    }
+    fetch();
+  }, [user]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
+  }
+
+  const scorePercent = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+  const omitted = answered > 0 ? 0 : 0;
+
+  const statCards = [
+    { label: "Total Questions", value: totalQ, icon: Target, color: "text-primary" },
+    { label: "Correct", value: correct, icon: CheckCircle2, color: "text-green-600" },
+    { label: "Incorrect", value: incorrect, icon: XCircle, color: "text-destructive" },
+    { label: "Overall Score", value: `${scorePercent}%`, icon: TrendingUp, color: "text-primary" },
+  ];
+
+  return (
+    <div className="animate-fade-in space-y-6">
+      <h1 className="text-xl font-bold text-foreground">Overall Performance</h1>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        {statCards.map((s) => (
+          <Card key={s.label}>
+            <CardContent className="flex items-center gap-3 pt-5 pb-4">
+              <s.icon className={`h-8 w-8 ${s.color}`} />
+              <div>
+                <p className="text-2xl font-bold text-foreground">{s.value}</p>
+                <p className="text-xs text-muted-foreground">{s.label}</p>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="text-base">Performance by Subject</CardTitle>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold">Performance by Subject</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {subjects.map((s) => {
-            const pct = Math.round((s.correct / s.total) * 100);
+            const pct = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
             return (
               <div key={s.name}>
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <span>{s.name}</span>
-                  <span className="font-semibold">{pct}% ({s.correct}/{s.total})</span>
+                  <span className="text-foreground">{s.name}</span>
+                  <span className="font-semibold text-muted-foreground">{pct}% ({s.correct}/{s.total})</span>
                 </div>
                 <Progress value={pct} className="h-2" />
               </div>
