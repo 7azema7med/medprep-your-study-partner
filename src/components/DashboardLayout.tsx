@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import {
   BookOpen, Home, FileQuestion, FilePlus, History, BarChart3,
   TrendingUp, FileText, LineChart, Search, StickyNote,
-  Library, BookMarked, ChevronDown, ChevronRight, Menu, X, LogOut, User, Settings
+  Library, BookMarked, ChevronDown, ChevronRight, Menu, X, LogOut, User, Settings, Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface NavItem {
   label: string;
@@ -24,9 +26,7 @@ const navItems: NavItem[] = [
     children: [
       { label: "Create Test", to: "/dashboard/create-test", icon: FilePlus },
       { label: "Previous Tests", to: "/dashboard/previous-tests", icon: History },
-      {
-        label: "Performance", to: "/dashboard/performance", icon: BarChart3,
-      },
+      { label: "Performance", to: "/dashboard/performance", icon: BarChart3 },
       { label: "Search Questions", to: "/dashboard/search", icon: Search },
       { label: "Notes", to: "/dashboard/notes", icon: StickyNote },
     ],
@@ -51,6 +51,7 @@ export default function DashboardLayout() {
   const [perfExpanded, setPerfExpanded] = useState(false);
   const [profileName, setProfileName] = useState("Student");
   const [profileEmail, setProfileEmail] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -60,6 +61,10 @@ export default function DashboardLayout() {
     if (user) {
       setProfileEmail(user.email || "");
       setProfileName(user.user_metadata?.username || user.email?.split("@")[0] || "Student");
+      // Check admin
+      supabase.from("user_roles").select("role").eq("user_id", user.id)
+        .in("role", ["super_admin", "admin", "editor", "moderator", "support", "content_manager", "question_reviewer"])
+        .then(({ data }) => setIsAdmin(!!(data && data.length > 0)));
     }
   }, [user, loading, navigate]);
 
@@ -78,7 +83,7 @@ export default function DashboardLayout() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );
@@ -86,102 +91,114 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
       <aside
         className={`flex flex-col transition-all duration-300 ${
-          sidebarOpen ? "w-64" : "w-0 -ml-64 md:w-16 md:ml-0"
-        } shrink-0 overflow-hidden`}
-        style={{ background: "hsl(207, 80%, 35%)" }}
+          sidebarOpen ? "w-60" : "w-0 -ml-60 md:w-14 md:ml-0"
+        } shrink-0 overflow-hidden bg-sidebar`}
       >
-        {/* Logo */}
-        <div className="flex h-16 items-center justify-center border-b border-sidebar-border px-4">
-          <BookOpen className="h-7 w-7 text-sidebar-foreground" />
+        <div className="flex h-12 items-center gap-2 border-b border-sidebar-border px-3">
+          <BookOpen className="h-5 w-5 text-sidebar-foreground" />
           {sidebarOpen && (
-            <span className="ml-2 text-lg font-bold text-sidebar-foreground">MedPrep</span>
+            <span className="text-sm font-bold text-sidebar-foreground">MedPrep</span>
           )}
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-2 py-4">
+        <nav className="flex-1 overflow-y-auto px-2 py-2">
           {navItems.map((item) => {
             if (item.children) {
               const isExpanded = expandedGroups.includes(item.label);
               return (
-                <div key={item.label} className="mb-1">
+                <div key={item.label} className="mb-0.5">
                   <button
                     onClick={() => toggleGroup(item.label)}
-                    className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/80 hover:text-sidebar-foreground"
-                    style={{ background: isExpanded ? "hsl(207, 80%, 40%)" : "transparent" }}
+                    className={`flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors ${
+                      isExpanded ? "bg-sidebar-accent text-sidebar-foreground" : "text-sidebar-foreground/65 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    }`}
                   >
                     <item.icon className="h-4 w-4 shrink-0" />
                     {sidebarOpen && (
                       <>
                         <span className="flex-1 text-left">{item.label}</span>
-                        {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.15 }}>
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </motion.div>
                       </>
                     )}
                   </button>
-                  {isExpanded && sidebarOpen && (
-                    <div className="ml-4 mt-1 space-y-0.5">
-                      {item.children.map((child) => {
-                        if (child.label === "Performance") {
-                          return (
-                            <div key={child.label}>
-                              <button
-                                onClick={() => setPerfExpanded(!perfExpanded)}
-                                className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm ${
-                                  ["/dashboard/performance", "/dashboard/reports", "/dashboard/graphs"].includes(location.pathname)
-                                    ? "font-medium text-sidebar-foreground"
-                                    : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
-                                }`}
-                                style={{
-                                  background: ["/dashboard/performance", "/dashboard/reports", "/dashboard/graphs"].includes(location.pathname) ? "hsl(207, 90%, 45%)" : "transparent",
-                                }}
-                              >
-                                <child.icon className="h-4 w-4 shrink-0" />
-                                <span className="flex-1 text-left">{child.label}</span>
-                                {perfExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                              </button>
-                              {perfExpanded && (
-                                <div className="ml-4 mt-0.5 space-y-0.5">
-                                  {performanceChildren.map((pc) => (
-                                    <Link
-                                      key={pc.to}
-                                      to={pc.to}
-                                      className={`flex items-center gap-3 rounded-md px-3 py-1.5 text-sm ${
-                                        isActive(pc.to)
-                                          ? "font-medium text-sidebar-foreground"
-                                          : "text-sidebar-foreground/60 hover:text-sidebar-foreground"
-                                      }`}
-                                      style={{ background: isActive(pc.to) ? "hsl(207, 90%, 45%)" : "transparent" }}
+                  <AnimatePresence>
+                    {isExpanded && sidebarOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="ml-3.5 mt-0.5 space-y-0.5 overflow-hidden border-l border-sidebar-border/50 pl-2.5"
+                      >
+                        {item.children.map((child) => {
+                          if (child.label === "Performance") {
+                            return (
+                              <div key={child.label}>
+                                <button
+                                  onClick={() => setPerfExpanded(!perfExpanded)}
+                                  className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[12px] transition-colors ${
+                                    ["/dashboard/performance", "/dashboard/reports", "/dashboard/graphs"].includes(location.pathname)
+                                      ? "font-medium text-sidebar-foreground bg-sidebar-primary/80"
+                                      : "text-sidebar-foreground/55 hover:text-sidebar-foreground"
+                                  }`}
+                                >
+                                  <child.icon className="h-3.5 w-3.5 shrink-0" />
+                                  <span className="flex-1 text-left">{child.label}</span>
+                                  <motion.div animate={{ rotate: perfExpanded ? 90 : 0 }} transition={{ duration: 0.15 }}>
+                                    <ChevronRight className="h-3 w-3" />
+                                  </motion.div>
+                                </button>
+                                <AnimatePresence>
+                                  {perfExpanded && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: "auto", opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      transition={{ duration: 0.15 }}
+                                      className="ml-3 mt-0.5 space-y-0.5 overflow-hidden"
                                     >
-                                      <pc.icon className="h-3.5 w-3.5 shrink-0" />
-                                      <span>{pc.label}</span>
-                                    </Link>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
+                                      {performanceChildren.map((pc) => (
+                                        <Link
+                                          key={pc.to}
+                                          to={pc.to}
+                                          className={`flex items-center gap-2 rounded-md px-2 py-1 text-[11px] transition-colors ${
+                                            isActive(pc.to)
+                                              ? "font-medium text-sidebar-foreground bg-sidebar-primary/80"
+                                              : "text-sidebar-foreground/50 hover:text-sidebar-foreground"
+                                          }`}
+                                        >
+                                          <pc.icon className="h-3 w-3 shrink-0" />
+                                          <span>{pc.label}</span>
+                                        </Link>
+                                      ))}
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            );
+                          }
+                          return (
+                            <Link
+                              key={child.to}
+                              to={child.to}
+                              className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-[12px] transition-colors ${
+                                isActive(child.to)
+                                  ? "font-medium text-sidebar-foreground bg-sidebar-primary/80"
+                                  : "text-sidebar-foreground/55 hover:text-sidebar-foreground"
+                              }`}
+                            >
+                              <child.icon className="h-3.5 w-3.5 shrink-0" />
+                              <span>{child.label}</span>
+                            </Link>
                           );
-                        }
-                        return (
-                          <Link
-                            key={child.to}
-                            to={child.to}
-                            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm ${
-                              isActive(child.to)
-                                ? "font-medium text-sidebar-foreground"
-                                : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
-                            }`}
-                            style={{ background: isActive(child.to) ? "hsl(207, 90%, 45%)" : "transparent" }}
-                          >
-                            <child.icon className="h-4 w-4 shrink-0" />
-                            <span>{child.label}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
+                        })}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             }
@@ -190,66 +207,69 @@ export default function DashboardLayout() {
               <Link
                 key={item.to}
                 to={item.to!}
-                className={`mb-1 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm ${
+                className={`mb-0.5 flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors ${
                   isActive(item.to!)
-                    ? "font-medium text-sidebar-foreground"
-                    : "text-sidebar-foreground/80 hover:text-sidebar-foreground"
+                    ? "font-medium text-sidebar-foreground bg-sidebar-primary/80"
+                    : "text-sidebar-foreground/65 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 }`}
-                style={{ background: isActive(item.to!) ? "hsl(207, 90%, 45%)" : "transparent" }}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
                 {sidebarOpen && <span>{item.label}</span>}
               </Link>
             );
           })}
+
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="mt-2 flex items-center gap-2.5 rounded-md border border-sidebar-border/50 px-2.5 py-1.5 text-[12px] font-medium text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+            >
+              <Shield className="h-4 w-4 shrink-0" />
+              {sidebarOpen && <span>Admin Panel</span>}
+            </Link>
+          )}
         </nav>
 
-        {/* User info */}
         {sidebarOpen && (
-          <div className="border-t border-sidebar-border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent">
-                <User className="h-4 w-4 text-sidebar-foreground" />
+          <div className="border-t border-sidebar-border p-3">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-sidebar-accent text-[11px] font-bold text-sidebar-foreground">
+                {profileName[0]?.toUpperCase() || "S"}
               </div>
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium text-sidebar-foreground">{profileName}</p>
-                <p className="truncate text-xs text-sidebar-foreground/60">{profileEmail}</p>
+                <p className="truncate text-[12px] font-medium text-sidebar-foreground">{profileName}</p>
+                <p className="truncate text-[10px] text-sidebar-foreground/45">{profileEmail}</p>
               </div>
             </div>
           </div>
         )}
       </aside>
 
-      {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header */}
-        <header className="flex h-14 items-center justify-between border-b bg-card px-4">
+        <header className="flex h-11 items-center justify-between border-b border-border/60 bg-card px-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-              {sidebarOpen ? <X className="h-5 w-5 text-muted-foreground" /> : <Menu className="h-5 w-5 text-muted-foreground" />}
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-muted-foreground transition-colors hover:text-foreground">
+              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
-            <span className="text-lg font-semibold">Welcome, {profileName}</span>
+            <span className="text-[13px] font-semibold text-foreground">Welcome, {profileName}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/">
-                <Home className="mr-1 h-4 w-4" /> Home
-              </Link>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <Button variant="ghost" size="sm" className="h-7 text-[11px]" asChild>
+              <Link to="/"><Home className="mr-1 h-3.5 w-3.5" />Home</Link>
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="mr-1 h-4 w-4" /> Logout
+            <Button variant="ghost" size="sm" className="h-7 text-[11px]" onClick={handleLogout}>
+              <LogOut className="mr-1 h-3.5 w-3.5" />Logout
             </Button>
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto bg-background p-6">
+        <main className="flex-1 overflow-y-auto bg-background p-5">
           <Outlet />
         </main>
 
-        {/* Footer */}
-        <footer className="border-t bg-card px-4 py-2 text-center text-xs text-muted-foreground">
-          Copyright © MedPrep. All rights reserved.
+        <footer className="border-t border-border/60 bg-card px-4 py-1.5 text-center text-[10px] text-muted-foreground">
+          © {new Date().getFullYear()} MedPrep. All rights reserved.
         </footer>
       </div>
     </div>
