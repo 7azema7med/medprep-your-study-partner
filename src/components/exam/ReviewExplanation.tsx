@@ -1,6 +1,8 @@
 import type { ExamQuestion } from "@/lib/exam-types";
 import { useExamStore } from "@/stores/exam-store";
-import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
+import { CheckCircle2, XCircle, Lightbulb, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface Props {
   question: ExamQuestion;
