@@ -220,10 +220,6 @@ export default function MedicalLibrary() {
         {/* Bottom Utility Bar */}
         <UtilityBar />
 
-        {/* Footer */}
-        <div className="shrink-0 border-t border-border bg-card py-2 text-center text-[10px] text-muted-foreground">
-          Copyright © Coursology. All rights reserved.
-        </div>
       </div>
     </div>
   );
