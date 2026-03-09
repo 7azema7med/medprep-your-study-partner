@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMedicalLibrary } from "@/hooks/useMedicalLibrary";
@@ -8,6 +8,38 @@ import { ArticleToolbar } from "@/components/library/ArticleToolbar";
 
 
 export default function MedicalLibrary() {
+  const [sidebarWidth, setSidebarWidth] = useState(320);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const startWidth = useRef(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    startX.current = e.clientX;
+    startWidth.current = sidebarWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      const delta = e.clientX - startX.current;
+      const newWidth = Math.min(500, Math.max(220, startWidth.current + delta));
+      setSidebarWidth(newWidth);
+    };
+    const handleMouseUp = () => {
+      isDragging.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
   const { user } = useAuth();
   const [showHighlights, setShowHighlights] = useState(true);
   const [activeSectionId, setActiveSectionId] = useState<string>('');
@@ -123,23 +155,30 @@ export default function MedicalLibrary() {
   return (
     <div className="flex h-[calc(100vh-5.5rem)] -m-5">
       {/* Library Sidebar */}
-      <LibrarySidebar
-        categories={categories}
-        articles={articles}
-        bookmarks={bookmarks}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedArticleId={selectedArticle?.id || null}
-        onArticleSelect={selectArticle}
-        getArticlesByCategory={getArticlesByCategory}
-        getReadStatus={getReadStatus}
-        sections={sections}
-        activeSectionId={activeSectionId}
-        onSectionClick={handleSectionClick}
-      />
+      <div style={{ width: sidebarWidth, minWidth: sidebarWidth, maxWidth: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden">
+        <LibrarySidebar
+          categories={categories}
+          articles={articles}
+          bookmarks={bookmarks}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedArticleId={selectedArticle?.id || null}
+          onArticleSelect={selectArticle}
+          getArticlesByCategory={getArticlesByCategory}
+          getReadStatus={getReadStatus}
+          sections={sections}
+          activeSectionId={activeSectionId}
+          onSectionClick={handleSectionClick}
+        />
+      </div>
 
-      {/* Divider */}
-      <div className="w-px shrink-0 bg-border" />
+      {/* Resizable Vertical Divider */}
+      <div
+        onMouseDown={handleMouseDown}
+        className="w-1 shrink-0 bg-border hover:bg-primary/40 cursor-col-resize transition-colors relative group"
+      >
+        <div className="absolute inset-y-0 -left-1 -right-1" />
+      </div>
 
       {/* Main Content Panel */}
       <div className="relative flex flex-1 flex-col overflow-hidden">

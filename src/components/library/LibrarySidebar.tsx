@@ -79,7 +79,7 @@ export function LibrarySidebar({
   // Bookmarks View
   if (showBookmarks) {
     return (
-      <aside className="flex w-80 min-w-[280px] max-w-[360px] shrink-0 flex-col border-r border-border bg-card">
+      <aside className="flex w-full h-full shrink-0 flex-col border-r border-border bg-card">
         <div className="p-3 border-b border-border">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -147,7 +147,7 @@ export function LibrarySidebar({
   }
 
   return (
-    <aside className="flex w-80 min-w-[280px] max-w-[360px] shrink-0 flex-col border-r border-border bg-card">
+    <aside className="flex w-full h-full shrink-0 flex-col bg-card overflow-hidden">
       {/* Search Field */}
       <div className="p-3 border-b border-border">
         <div className="relative">
