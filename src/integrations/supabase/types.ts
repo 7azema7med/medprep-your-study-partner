@@ -812,19 +812,25 @@ export type Database = {
       subjects: {
         Row: {
           category: string
+          description: string | null
           id: string
+          is_active: boolean | null
           name: string
           question_count: number
         }
         Insert: {
           category?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name: string
           question_count?: number
         }
         Update: {
           category?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name?: string
           question_count?: number
         }
@@ -874,23 +880,75 @@ export type Database = {
           },
         ]
       }
+      subsystems: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          system_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          system_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          system_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subsystems_system_id_fkey"
+            columns: ["system_id"]
+            isOneToOne: false
+            referencedRelation: "systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       systems: {
         Row: {
           created_at: string
+          description: string | null
           id: string
+          is_active: boolean | null
           name: string
+          subject_id: string | null
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name: string
+          subject_id?: string | null
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name?: string
+          subject_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "systems_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_questions: {
         Row: {
@@ -1114,6 +1172,48 @@ export type Database = {
             columns: ["section_id"]
             isOneToOne: false
             referencedRelation: "medical_library_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_navigation_preferences: {
+        Row: {
+          collapsed: boolean | null
+          created_at: string | null
+          id: string
+          subject_id: string | null
+          system_id: string | null
+          user_id: string
+        }
+        Insert: {
+          collapsed?: boolean | null
+          created_at?: string | null
+          id?: string
+          subject_id?: string | null
+          system_id?: string | null
+          user_id: string
+        }
+        Update: {
+          collapsed?: boolean | null
+          created_at?: string | null
+          id?: string
+          subject_id?: string | null
+          system_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_navigation_preferences_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_navigation_preferences_system_id_fkey"
+            columns: ["system_id"]
+            isOneToOne: false
+            referencedRelation: "systems"
             referencedColumns: ["id"]
           },
         ]
