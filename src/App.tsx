@@ -79,6 +79,7 @@ const App = () => (
               <Route path="graphs" element={<Graphs />} />
               <Route path="search" element={<SearchQuestions />} />
               <Route path="notes" element={<Notes />} />
+              <Route path="browse" element={<BrowseContent />} />
               <Route path="medical-library" element={<MedicalLibrary />} />
               <Route path="my-notebook" element={<MyNotebook />} />
               <Route path="settings" element={<Settings />} />

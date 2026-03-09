@@ -20,6 +20,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", to: "/dashboard", icon: Home },
+  { label: "Browse Topics", to: "/dashboard/browse", icon: Layers },
   {
     label: "QBank",
     icon: FileQuestion,
