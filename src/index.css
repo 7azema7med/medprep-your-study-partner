@@ -61,6 +61,20 @@
     --hero-gradient: linear-gradient(135deg, hsl(215, 40%, 18%) 0%, hsl(210, 70%, 46%) 100%);
     --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
     --card-shadow-hover: 0 4px 12px -2px rgb(0 0 0 / 0.08);
+
+    /* UWorld/NBME Exam Interface Colors */
+    --exam-header: 227 42% 43%;
+    --exam-header-font: 0 0% 100%;
+    --exam-nav-bg: 0 0% 100%;
+    --exam-nav-selected: 210 52% 57%;
+    --exam-nav-selected-font: 0 0% 100%;
+    --exam-nav-border: 0 0% 87%;
+    --exam-nav-header: 213 55% 72%;
+    --exam-content-bg: 0 0% 100%;
+    --exam-answer-hover: 210 20% 96%;
+    --exam-marked: 210 100% 61%;
+    --exam-icon: 0 0% 100%;
+    --exam-icon-hover: 231 43% 36%;
   }
 
   .dark {
@@ -117,6 +131,20 @@
     --hero-gradient: linear-gradient(135deg, hsl(220, 20%, 8%) 0%, hsl(210, 65%, 30%) 100%);
     --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.2);
     --card-shadow-hover: 0 4px 12px -2px rgb(0 0 0 / 0.3);
+
+    /* UWorld/NBME Dark Mode Exam */
+    --exam-header: 0 0% 16%;
+    --exam-header-font: 0 0% 100%;
+    --exam-nav-bg: 0 0% 7%;
+    --exam-nav-selected: 197 100% 75%;
+    --exam-nav-selected-font: 0 0% 0%;
+    --exam-nav-border: 0 0% 30%;
+    --exam-nav-header: 0 0% 12%;
+    --exam-content-bg: 0 0% 7%;
+    --exam-answer-hover: 0 0% 12%;
+    --exam-marked: 210 100% 61%;
+    --exam-icon: 0 0% 100%;
+    --exam-icon-hover: 0 0% 30%;
   }
 }
 
@@ -164,4 +192,73 @@ html.dark {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.4);
+}
+
+/* UWorld Exam Interface specific styles */
+.exam-font {
+  font-family: Arial, Verdana, Helvetica, sans-serif;
+}
+
+.nbme-radio-outer {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid hsl(var(--exam-header));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.nbme-radio-outer.selected {
+  border-color: hsl(var(--exam-header));
+  background: hsl(var(--exam-header));
+}
+
+.nbme-radio-outer.correct {
+  border-color: hsl(142, 71%, 45%);
+  background: hsl(142, 71%, 45%);
+}
+
+.nbme-radio-outer.incorrect {
+  border-color: hsl(0, 65%, 51%);
+  background: hsl(0, 65%, 51%);
+}
+
+.nbme-radio-inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+
+/* Strikethrough on right-click */
+.choice-struck {
+  text-decoration: line-through;
+  opacity: 0.45;
+}
+
+/* Navigator question cell */
+.nav-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: Verdana, Arial, Georgia, sans-serif;
+  cursor: pointer;
+  border-bottom: 1px solid hsl(var(--exam-nav-border));
+  transition: background 0.1s;
+}
+
+.nav-cell:hover {
+  background: hsl(var(--exam-answer-hover));
+}
+
+.nav-cell.active {
+  background: hsl(var(--exam-nav-selected));
+  color: hsl(var(--exam-nav-selected-font));
+  font-weight: bold;
 }

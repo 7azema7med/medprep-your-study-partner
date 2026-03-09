@@ -8,9 +8,9 @@ export default function QuestionPanel() {
   if (!question) return null;
 
   const fontSizeClass = {
-    small: "text-sm",
-    medium: "text-base",
-    large: "text-lg",
+    small: "text-[13px]",
+    medium: "text-[14px]",
+    large: "text-[16px]",
   }[settings.fontSize];
 
   const lineClass = {
@@ -29,17 +29,24 @@ export default function QuestionPanel() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-background">
+    <div
+      className="exam-font flex-1 overflow-y-auto"
+      style={{ background: "hsl(var(--exam-content-bg))" }}
+    >
       <div className="max-w-4xl p-6 md:p-8">
         {/* Question stem */}
         <div className={`mb-6 ${fontSizeClass} ${lineClass} text-foreground`}>
           {question.question_text}
         </div>
 
-        {/* Question image placeholder */}
+        {/* Question image */}
         {question.question_image && (
           <div className="mb-6">
-            <img src={question.question_image} alt="Question figure" className="max-w-full rounded border" />
+            <img
+              src={question.question_image}
+              alt="Question figure"
+              className="max-w-full rounded border"
+            />
           </div>
         )}
 
@@ -50,7 +57,10 @@ export default function QuestionPanel() {
         {!isReviewMode && !isExplanationShown && hasAnswer && (
           <button
             onClick={handleSubmitAnswer}
-            className="mt-4 rounded bg-[hsl(var(--sidebar-bg))] px-6 py-2 text-sm font-semibold text-white hover:bg-[hsl(var(--sidebar-bg-hover))] transition-colors"
+            className="mt-5 rounded px-8 py-2 text-[13px] font-semibold text-white transition-all hover:brightness-110"
+            style={{
+              background: "linear-gradient(to bottom, hsl(210, 52%, 57%), hsl(227, 42%, 43%))",
+            }}
           >
             Submit
           </button>
