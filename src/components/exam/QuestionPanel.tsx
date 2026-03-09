@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useExamStore } from "@/stores/exam-store";
 import AnswerChoices from "./AnswerChoices";
 import ReviewExplanation from "./ReviewExplanation";
@@ -19,7 +19,6 @@ export default function QuestionPanel() {
   } = useExamStore();
 
   const question = questions[currentIndex];
-  if (!question) return null;
 
   const fontSizeClass = {
     small: "text-[13px]",
@@ -33,28 +32,26 @@ export default function QuestionPanel() {
     relaxed: "leading-loose",
   }[settings.lineSpacing];
 
-  const hasAnswer = !!answers[question.id]?.selected_choice_id;
-  const isExplanationShown = showExplanation[question.id];
-
-  const handleSubmitAnswer = () => {
-    if (hasAnswer) {
-      setShowExplanation(question.id, true);
-    }
-  };
+  const hasAnswer = question ? !!answers[question.id]?.selected_choice_id : false;
+  const isExplanationShown = question ? showExplanation[question.id] : false;
 
   // Filter highlights for current question stem
-  const questionHighlights = highlights
-    .filter((h) => h.question_id === question.id && h.target_type === "stem")
-    .map((h) => ({
-      id: h.id,
-      text: h.selected_text,
-      color: h.color,
-      startOffset: h.start_offset,
-      endOffset: h.end_offset,
-    }));
+  const questionHighlights = useMemo(() => {
+    if (!question) return [];
+    return highlights
+      .filter((h) => h.question_id === question.id && h.target_type === "stem")
+      .map((h) => ({
+        id: h.id,
+        text: h.selected_text,
+        color: h.color,
+        startOffset: h.start_offset,
+        endOffset: h.end_offset,
+      }));
+  }, [highlights, question]);
 
   const handleAddHighlight = useCallback(
     (hl: { text: string; color: string; startOffset: number; endOffset: number }) => {
+      if (!question) return;
       addHighlight({
         id: `hl-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         question_id: question.id,
@@ -66,8 +63,16 @@ export default function QuestionPanel() {
         color: hl.color,
       });
     },
-    [addHighlight, question.id]
+    [addHighlight, question]
   );
+
+  const handleSubmitAnswer = useCallback(() => {
+    if (question && hasAnswer) {
+      setShowExplanation(question.id, true);
+    }
+  }, [question, hasAnswer, setShowExplanation]);
+
+  if (!question) return null;
 
   return (
     <div
