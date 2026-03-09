@@ -206,41 +206,52 @@ export function LibrarySidebar({
         )}
       </button>
 
-      {/* Article Sections (when article is selected) */}
       {selectedArticleId && sections.length > 0 && (
-        <div className="border-b border-border">
+        <div className="flex flex-col" style={{ height: showSections ? sectionsPanelHeight : 'auto' }}>
           <button
             onClick={() => setShowSections(!showSections)}
-            className="flex items-center gap-2 w-full px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:bg-muted/30"
+            className="flex items-center gap-2 w-full px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:bg-muted/30 shrink-0"
           >
             {showSections ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
             Article Sections
           </button>
           
           {showSections && (
-            <div className="pb-2 px-2">
-              {sections.map(section => {
-                const isActive = activeSectionId === section.id;
-                return (
-                  <button
-                    key={section.id}
-                    onClick={() => onSectionClick?.(section.id)}
-                    className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-all relative ${
-                      isActive 
-                        ? "bg-primary/10 text-primary font-medium" 
-                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                    }`}
-                  >
-                    {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r" />
-                    )}
-                    <Hash className={`h-3 w-3 flex-shrink-0 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                    <span className="text-sm truncate">{section.title}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="pb-2 px-2">
+                {sections.map(section => {
+                  const isActive = activeSectionId === section.id;
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => onSectionClick?.(section.id)}
+                      className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-all relative ${
+                        isActive 
+                          ? "bg-primary/10 text-primary font-medium" 
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      }`}
+                    >
+                      {isActive && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r" />
+                      )}
+                      <Hash className={`h-3 w-3 flex-shrink-0 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className="text-sm truncate">{section.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </ScrollArea>
           )}
+        </div>
+      )}
+
+      {/* Draggable Divider */}
+      {selectedArticleId && sections.length > 0 && showSections && (
+        <div
+          onMouseDown={handleDragStart}
+          className="shrink-0 h-1.5 cursor-row-resize group flex items-center justify-center hover:bg-primary/10 transition-colors border-y border-border"
+        >
+          <div className="w-8 h-0.5 rounded-full bg-muted-foreground/30 group-hover:bg-primary/50 transition-colors" />
         </div>
       )}
 
