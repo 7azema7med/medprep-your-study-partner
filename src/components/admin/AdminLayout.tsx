@@ -31,6 +31,7 @@ const navItems: NavItem[] = [
   { label: "Questions", to: "/admin/questions", icon: FileQuestion },
   { label: "Notes", to: "/admin/notes", icon: StickyNote },
   { label: "Exams", to: "/admin/exams", icon: BookOpen },
+  { label: "Medical Library", to: "/admin/library", icon: Library },
   { label: "Activation Codes", to: "/admin/codes", icon: Key },
   { label: "Plans & Subs", to: "/admin/plans", icon: CreditCard },
   { label: "Analytics", to: "/admin/analytics", icon: BarChart3 },
