@@ -1,67 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Search, Bookmark, FileText, Folder, ChevronDown, ChevronRight, BookOpen, Hash } from "lucide-react";
 import { MedicalLibraryCategory, MedicalLibraryArticle, UserBookmark, MedicalLibrarySection } from "@/hooks/useMedicalLibrary";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface LibrarySidebarProps {
-  categories: MedicalLibraryCategory[];
-  articles: MedicalLibraryArticle[];
-  bookmarks: UserBookmark[];
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
-  selectedArticleId: string | null;
-  onArticleSelect: (article: MedicalLibraryArticle) => void;
-  getArticlesByCategory: (categoryId: string) => MedicalLibraryArticle[];
-  getReadStatus: (articleId: string) => 'unread' | 'in_progress' | 'read';
-  sections?: MedicalLibrarySection[];
-  activeSectionId?: string;
-  onSectionClick?: (sectionId: string) => void;
-}
-
-export function LibrarySidebar({
-  categories,
-  articles,
-  bookmarks,
-  searchQuery,
-  onSearchChange,
-  selectedArticleId,
-  onArticleSelect,
-  getArticlesByCategory,
-  getReadStatus,
-  sections = [],
-  activeSectionId,
-  onSectionClick
-}: LibrarySidebarProps) {
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
-  const [showBookmarks, setShowBookmarks] = useState(false);
-  const [showSections, setShowSections] = useState(true);
-  const [sectionsPanelHeight, setSectionsPanelHeight] = useState(220);
-  const isDragging = useRef(false);
-  const startY = useRef(0);
-  const startHeight = useRef(0);
-
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    isDragging.current = true;
-    startY.current = e.clientY;
-    startHeight.current = sectionsPanelHeight;
-
-    const handleDragMove = (ev: MouseEvent) => {
-      if (!isDragging.current) return;
-      const delta = ev.clientY - startY.current;
-      const newHeight = Math.max(80, Math.min(500, startHeight.current + delta));
-      setSectionsPanelHeight(newHeight);
-    };
-
-    const handleDragEnd = () => {
-      isDragging.current = false;
-      document.removeEventListener('mousemove', handleDragMove);
-      document.removeEventListener('mouseup', handleDragEnd);
-    };
-
-    document.addEventListener('mousemove', handleDragMove);
-    document.addEventListener('mouseup', handleDragEnd);
-  }, [sectionsPanelHeight]);
 
   // Auto-expand category when article is selected
   useEffect(() => {
