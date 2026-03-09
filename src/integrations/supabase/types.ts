@@ -1374,6 +1374,99 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          auto_add_annotation: boolean
+          auto_add_flashcard: boolean
+          auto_add_notebook: boolean
+          color_theme: string
+          confirm_answer_omission: boolean
+          content_padding: number
+          created_at: string
+          exhibit_style: string
+          font_size: string
+          font_weight: string
+          hide_answered_correct_percent: boolean
+          highlight_color: string
+          highlight_palette: string[]
+          id: string
+          image_alignment: string
+          line_width: number
+          multicolor_highlighting: boolean
+          night_mode_auto: boolean
+          night_mode_end: string
+          night_mode_start: string
+          pause_timer_on_blur: boolean
+          show_timer: boolean
+          sidebar_behavior: string
+          smart_context_menu: boolean
+          split_view: boolean
+          text_alignment: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_add_annotation?: boolean
+          auto_add_flashcard?: boolean
+          auto_add_notebook?: boolean
+          color_theme?: string
+          confirm_answer_omission?: boolean
+          content_padding?: number
+          created_at?: string
+          exhibit_style?: string
+          font_size?: string
+          font_weight?: string
+          hide_answered_correct_percent?: boolean
+          highlight_color?: string
+          highlight_palette?: string[]
+          id?: string
+          image_alignment?: string
+          line_width?: number
+          multicolor_highlighting?: boolean
+          night_mode_auto?: boolean
+          night_mode_end?: string
+          night_mode_start?: string
+          pause_timer_on_blur?: boolean
+          show_timer?: boolean
+          sidebar_behavior?: string
+          smart_context_menu?: boolean
+          split_view?: boolean
+          text_alignment?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_add_annotation?: boolean
+          auto_add_flashcard?: boolean
+          auto_add_notebook?: boolean
+          color_theme?: string
+          confirm_answer_omission?: boolean
+          content_padding?: number
+          created_at?: string
+          exhibit_style?: string
+          font_size?: string
+          font_weight?: string
+          hide_answered_correct_percent?: boolean
+          highlight_color?: string
+          highlight_palette?: string[]
+          id?: string
+          image_alignment?: string
+          line_width?: number
+          multicolor_highlighting?: boolean
+          night_mode_auto?: boolean
+          night_mode_end?: string
+          night_mode_start?: string
+          pause_timer_on_blur?: boolean
+          show_timer?: boolean
+          sidebar_behavior?: string
+          smart_context_menu?: boolean
+          split_view?: boolean
+          text_alignment?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
