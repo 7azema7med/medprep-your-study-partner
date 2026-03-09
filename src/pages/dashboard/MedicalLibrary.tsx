@@ -5,7 +5,7 @@ import { useMedicalLibrary } from "@/hooks/useMedicalLibrary";
 import { LibrarySidebar } from "@/components/library/LibrarySidebar";
 import { ArticleReader } from "@/components/library/ArticleReader";
 import { ArticleToolbar } from "@/components/library/ArticleToolbar";
-import { UtilityBar } from "@/components/library/UtilityBar";
+
 
 export default function MedicalLibrary() {
   const { user } = useAuth();
