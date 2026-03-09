@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Shield, Key, FileQuestion, StickyNote,
   BookOpen, Settings, ScrollText, CreditCard, BarChart3, Menu, X,
-  LogOut, ChevronDown, ChevronRight, Home, UserCog
+  LogOut, ChevronDown, ChevronRight, Home, UserCog, Library
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
