@@ -155,23 +155,30 @@ export default function MedicalLibrary() {
   return (
     <div className="flex h-[calc(100vh-5.5rem)] -m-5">
       {/* Library Sidebar */}
-      <LibrarySidebar
-        categories={categories}
-        articles={articles}
-        bookmarks={bookmarks}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedArticleId={selectedArticle?.id || null}
-        onArticleSelect={selectArticle}
-        getArticlesByCategory={getArticlesByCategory}
-        getReadStatus={getReadStatus}
-        sections={sections}
-        activeSectionId={activeSectionId}
-        onSectionClick={handleSectionClick}
-      />
+      <div style={{ width: sidebarWidth, minWidth: sidebarWidth, maxWidth: sidebarWidth }} className="shrink-0 flex flex-col overflow-hidden">
+        <LibrarySidebar
+          categories={categories}
+          articles={articles}
+          bookmarks={bookmarks}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedArticleId={selectedArticle?.id || null}
+          onArticleSelect={selectArticle}
+          getArticlesByCategory={getArticlesByCategory}
+          getReadStatus={getReadStatus}
+          sections={sections}
+          activeSectionId={activeSectionId}
+          onSectionClick={handleSectionClick}
+        />
+      </div>
 
-      {/* Divider */}
-      <div className="w-px shrink-0 bg-border" />
+      {/* Resizable Vertical Divider */}
+      <div
+        onMouseDown={handleMouseDown}
+        className="w-1 shrink-0 bg-border hover:bg-primary/40 cursor-col-resize transition-colors relative group"
+      >
+        <div className="absolute inset-y-0 -left-1 -right-1" />
+      </div>
 
       {/* Main Content Panel */}
       <div className="relative flex flex-1 flex-col overflow-hidden">
