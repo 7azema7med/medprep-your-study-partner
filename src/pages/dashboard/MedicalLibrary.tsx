@@ -217,8 +217,6 @@ export default function MedicalLibrary() {
           </div>
         </div>
       </div>
-
-      </div>
     </div>
   );
 }
