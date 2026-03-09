@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, Bookmark, FileText, Folder, ChevronDown, ChevronRight, BookOpen, Hash } from "lucide-react";
 import { MedicalLibraryCategory, MedicalLibraryArticle, UserBookmark, MedicalLibrarySection } from "@/hooks/useMedicalLibrary";
 import { ScrollArea } from "@/components/ui/scroll-area";
