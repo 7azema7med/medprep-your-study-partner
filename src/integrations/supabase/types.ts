@@ -226,6 +226,132 @@ export type Database = {
         }
         Relationships: []
       }
+      medical_library_articles: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_published: boolean | null
+          slug: string
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          slug: string
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean | null
+          slug?: string
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_library_articles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_library_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          order_index: number | null
+          parent_id: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          order_index?: number | null
+          parent_id?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          order_index?: number | null
+          parent_id?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_library_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_library_sections: {
+        Row: {
+          article_id: string
+          content: string
+          created_at: string
+          id: string
+          level: number | null
+          order_index: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          article_id: string
+          content: string
+          created_at?: string
+          id?: string
+          level?: number | null
+          order_index: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          level?: number | null
+          order_index?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_library_sections_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           content: string | null
@@ -881,6 +1007,154 @@ export type Database = {
         }
         Relationships: []
       }
+      user_bookmarks: {
+        Row: {
+          article_id: string
+          bookmark_type: string | null
+          created_at: string
+          id: string
+          section_id: string | null
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          bookmark_type?: string | null
+          created_at?: string
+          id?: string
+          section_id?: string | null
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          bookmark_type?: string | null
+          created_at?: string
+          id?: string
+          section_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bookmarks_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bookmarks_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_highlights: {
+        Row: {
+          article_id: string
+          created_at: string
+          end_offset: number
+          highlight_color: string | null
+          id: string
+          section_id: string | null
+          selected_text: string
+          start_offset: number
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          end_offset: number
+          highlight_color?: string | null
+          id?: string
+          section_id?: string | null
+          selected_text: string
+          start_offset: number
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          end_offset?: number
+          highlight_color?: string | null
+          id?: string
+          section_id?: string | null
+          selected_text?: string
+          start_offset?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_highlights_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_highlights_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_notes: {
+        Row: {
+          article_id: string
+          created_at: string
+          highlight_id: string | null
+          id: string
+          note_text: string
+          section_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          highlight_id?: string | null
+          id?: string
+          note_text: string
+          section_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          highlight_id?: string | null
+          id?: string
+          note_text?: string
+          section_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_notes_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_notes_highlight_id_fkey"
+            columns: ["highlight_id"]
+            isOneToOne: false
+            referencedRelation: "user_highlights"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_notes_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_question_status: {
         Row: {
           id: string
@@ -909,6 +1183,54 @@ export type Database = {
             columns: ["question_id"]
             isOneToOne: false
             referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_read_progress: {
+        Row: {
+          article_id: string
+          created_at: string
+          id: string
+          last_section_id: string | null
+          progress_percentage: number | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          id?: string
+          last_section_id?: string | null
+          progress_percentage?: number | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          id?: string
+          last_section_id?: string | null
+          progress_percentage?: number | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_read_progress_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_read_progress_last_section_id_fkey"
+            columns: ["last_section_id"]
+            isOneToOne: false
+            referencedRelation: "medical_library_sections"
             referencedColumns: ["id"]
           },
         ]
