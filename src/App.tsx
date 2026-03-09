@@ -24,6 +24,7 @@ import Reports from "./pages/dashboard/Reports";
 import Graphs from "./pages/dashboard/Graphs";
 import SearchQuestions from "./pages/dashboard/SearchQuestions";
 import Notes from "./pages/dashboard/Notes";
+import BrowseContent from "./pages/dashboard/BrowseContent";
 import MedicalLibrary from "./pages/dashboard/MedicalLibrary";
 import MyNotebook from "./pages/dashboard/MyNotebook";
 import Settings from "./pages/dashboard/Settings";
