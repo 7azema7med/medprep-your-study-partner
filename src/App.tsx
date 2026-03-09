@@ -46,6 +46,7 @@ import PlansSubscriptions from "./pages/admin/PlansSubscriptions";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AuditLogs from "./pages/admin/AuditLogs";
 import SiteSettings from "./pages/admin/SiteSettings";
+import LibraryManagement from "./pages/admin/LibraryManagement";
 
 const queryClient = new QueryClient();
 
