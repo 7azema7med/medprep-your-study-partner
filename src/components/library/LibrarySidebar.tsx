@@ -35,6 +35,33 @@ export function LibrarySidebar({
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showSections, setShowSections] = useState(true);
+  const [sectionsPanelHeight, setSectionsPanelHeight] = useState(220);
+  const isDragging = useRef(false);
+  const startY = useRef(0);
+  const startHeight = useRef(0);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isDragging.current = true;
+    startY.current = e.clientY;
+    startHeight.current = sectionsPanelHeight;
+
+    const handleDragMove = (ev: MouseEvent) => {
+      if (!isDragging.current) return;
+      const delta = ev.clientY - startY.current;
+      const newHeight = Math.max(80, Math.min(500, startHeight.current + delta));
+      setSectionsPanelHeight(newHeight);
+    };
+
+    const handleDragEnd = () => {
+      isDragging.current = false;
+      document.removeEventListener('mousemove', handleDragMove);
+      document.removeEventListener('mouseup', handleDragEnd);
+    };
+
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+  }, [sectionsPanelHeight]);
 
   // Auto-expand category when article is selected
   useEffect(() => {
