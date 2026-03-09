@@ -171,10 +171,10 @@ export default function CreateTest() {
               <div className="px-5 py-4">
                 <StatusFilter selectedFilters={selectedFilters} onToggleFilter={toggleFilter} filterCounts={filterCounts} />
               </div>
-              <div className="px-5 py-4">
+              <div className="px-5 py-3">
                 <SubjectSelector subjects={subjects} selectedSubjects={selectedSubjects} onToggleSubject={toggleSubject} onSelectAll={handleSelectAllSubjects} selectAll={selectAllSubjects} />
               </div>
-              <div className="px-5 py-4">
+              <div className="px-5 py-3">
                 <SystemSelector systems={systems} selectedSystems={selectedSystems} onToggleSystem={toggleSystem} onSelectAll={handleSelectAllSystems} selectAll={selectAllSystems} />
               </div>
               <div className="px-5 py-4">
