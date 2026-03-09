@@ -458,31 +458,43 @@ export type Database = {
       }
       profiles: {
         Row: {
+          academic_year: string | null
           activation_code: string | null
           country: string | null
           created_at: string
+          full_name: string | null
           id: string
           phone: string | null
+          semester: string | null
+          university_id: string | null
           updated_at: string
           user_id: string
           username: string
         }
         Insert: {
+          academic_year?: string | null
           activation_code?: string | null
           country?: string | null
           created_at?: string
+          full_name?: string | null
           id?: string
           phone?: string | null
+          semester?: string | null
+          university_id?: string | null
           updated_at?: string
           user_id: string
           username: string
         }
         Update: {
+          academic_year?: string | null
           activation_code?: string | null
           country?: string | null
           created_at?: string
+          full_name?: string | null
           id?: string
           phone?: string | null
+          semester?: string | null
+          university_id?: string | null
           updated_at?: string
           user_id?: string
           username?: string
@@ -669,6 +681,7 @@ export type Database = {
       }
       questions: {
         Row: {
+          academic_year: string | null
           created_at: string
           difficulty: string | null
           explanation: string | null
@@ -677,11 +690,13 @@ export type Database = {
           public_id: number
           question_set_id: string | null
           question_text: string
+          semester: string | null
           subject_id: string | null
           system_id: string | null
           topic_id: string | null
         }
         Insert: {
+          academic_year?: string | null
           created_at?: string
           difficulty?: string | null
           explanation?: string | null
@@ -690,11 +705,13 @@ export type Database = {
           public_id?: number
           question_set_id?: string | null
           question_text: string
+          semester?: string | null
           subject_id?: string | null
           system_id?: string | null
           topic_id?: string | null
         }
         Update: {
+          academic_year?: string | null
           created_at?: string
           difficulty?: string | null
           explanation?: string | null
@@ -703,6 +720,7 @@ export type Database = {
           public_id?: number
           question_set_id?: string | null
           question_text?: string
+          semester?: string | null
           subject_id?: string | null
           system_id?: string | null
           topic_id?: string | null
