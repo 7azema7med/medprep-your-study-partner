@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useExamStore } from "@/stores/exam-store";
-import { Clock, BookOpen, NotebookPen, Layers, MessageSquare, Pause, StopCircle } from "lucide-react";
+import {
+  Clock, BookOpen, NotebookPen, Layers,
+  MessageSquare, Pause, StopCircle
+} from "lucide-react";
 
 export default function ExamBottomBar() {
   const {
@@ -22,40 +25,52 @@ export default function ExamBottomBar() {
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
+  const actions = [
+    { icon: BookOpen, label: "Medical Library", dialog: null as string | null },
+    { icon: NotebookPen, label: "My Notebook", dialog: null as string | null },
+    { icon: Layers, label: "Flashcards", dialog: "flashcard" },
+    { icon: MessageSquare, label: "Feedback", dialog: "feedback" },
+    { icon: Pause, label: "Suspend", dialog: "suspend" },
+    { icon: StopCircle, label: isReviewMode ? "End Review" : "End Block", dialog: "submit" },
+  ];
+
   return (
-    <div className="flex h-12 items-center justify-between bg-[hsl(var(--sidebar-bg))] px-3 select-none shrink-0">
+    <div
+      className="exam-font flex h-[52px] items-center justify-between px-2 select-none shrink-0"
+      style={{ background: "hsl(var(--exam-header))" }}
+    >
       {/* Left: Timer */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-white/70" />
-          <div className="text-white">
-            <div className="text-xs font-semibold leading-tight">
-              Block Time Elapsed: {settings.showTimer ? formatTime(elapsedSeconds) : "--:--:--"}
-            </div>
-            <div className="text-[10px] text-white/60 uppercase leading-tight">
-              {session?.mode === "tutor" ? "TUTOR" : "TIMED"}
-            </div>
-          </div>
+      <div className="flex items-center gap-3">
+        <button className="flex h-10 flex-col items-center justify-center rounded px-3 text-white/80 hover:text-yellow-300 transition-colors">
+          <Clock className="h-[18px] w-[18px]" />
+          <span className="text-[9px] leading-none mt-0.5">
+            {settings.showTimer ? formatTime(elapsedSeconds) : "Timer"}
+          </span>
+        </button>
+
+        <div className="h-8 w-px bg-white/20" />
+
+        <div className="text-white/70 text-[11px]">
+          <span className="font-semibold text-white">
+            Block Time: {settings.showTimer ? formatTime(elapsedSeconds) : "--:--:--"}
+          </span>
+          <span className="ml-3 text-white/50 uppercase text-[10px]">
+            {session?.mode === "tutor" ? "TUTOR MODE" : "TIMED MODE"}
+          </span>
         </div>
       </div>
 
       {/* Right: Action buttons */}
-      <div className="flex items-center gap-1">
-        {[
-          { icon: BookOpen, label: "Medical Library", dialog: null },
-          { icon: NotebookPen, label: "My Notebook", dialog: null },
-          { icon: Layers, label: "Flashcards", dialog: "flashcard" },
-          { icon: MessageSquare, label: "Feedback", dialog: "feedback" },
-          { icon: Pause, label: "Suspend", dialog: "suspend" },
-          { icon: StopCircle, label: isReviewMode ? "End Review" : "End Block", dialog: "submit" },
-        ].map(({ icon: Icon, label, dialog }) => (
+      <div className="flex items-center gap-0">
+        {actions.map(({ icon: Icon, label, dialog }) => (
           <button
             key={label}
             onClick={() => dialog && setActiveDialog(dialog)}
-            className="flex flex-col items-center gap-0.5 rounded px-3 py-1 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+            className="flex h-10 flex-col items-center justify-center rounded px-3 text-white/80 hover:text-yellow-300 transition-colors"
+            style={{ minWidth: 52 }}
           >
-            <Icon className="h-4 w-4" />
-            <span className="text-[9px] leading-none">{label}</span>
+            <Icon className="h-[18px] w-[18px]" />
+            <span className="text-[9px] leading-none mt-0.5 whitespace-nowrap">{label}</span>
           </button>
         ))}
       </div>

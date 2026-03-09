@@ -9,40 +9,91 @@ export default function QuestionSidebar() {
 
   if (!sidebarOpen) return null;
 
-  const getStatusColor = (qId: string, index: number) => {
-    const answer = answers[qId];
-    const isCurrent = index === currentIndex;
-
-    if (isReviewMode && answer?.selected_choice_id) {
-      const q = questions[index];
-      const selectedChoice = q.choices.find((c) => c.id === answer.selected_choice_id);
-      if (selectedChoice?.is_correct) return "bg-green-500";
-      return "bg-destructive";
-    }
-
-    if (answer?.is_marked) return "bg-yellow-400";
-    if (answer?.selected_choice_id) return "bg-[hsl(var(--sidebar-bg))]";
-    return "bg-muted-foreground/40";
-  };
-
   return (
-    <div className="w-16 shrink-0 border-r bg-card flex flex-col">
+    <div
+      className="exam-font shrink-0 flex flex-col"
+      style={{
+        width: 110,
+        background: "hsl(var(--exam-nav-bg))",
+        borderRight: "1px solid hsl(var(--exam-nav-border))",
+      }}
+    >
+      {/* Navigator header */}
+      <div
+        className="flex items-center justify-center py-1.5 text-[11px] font-bold text-white uppercase tracking-wide"
+        style={{ background: "hsl(var(--exam-nav-header))" }}
+      >
+        Navigator
+      </div>
+
+      {/* Column headers */}
+      <div
+        className="grid grid-cols-3 text-[10px] font-semibold text-center border-b"
+        style={{
+          borderColor: "hsl(var(--exam-nav-border))",
+          background: "hsl(var(--exam-nav-border))",
+          color: "hsl(var(--foreground))",
+        }}
+      >
+        <span className="py-0.5">#</span>
+        <span className="py-0.5">Status</span>
+        <span className="py-0.5">Flag</span>
+      </div>
+
+      {/* Question list */}
       <ScrollArea className="flex-1">
-        <div className="py-1">
+        <div>
           {questions.map((q, i) => {
             const isCurrent = i === currentIndex;
+            const answer = answers[q.id];
+            const isAnswered = !!answer?.selected_choice_id;
+            const isMarked = answer?.is_marked ?? false;
+            const isFlagged = answer?.is_flagged ?? false;
+
+            // Determine correctness in review mode
+            let statusIndicator = "";
+            let statusColor = "";
+            if (isReviewMode && isAnswered) {
+              const selectedChoice = q.choices.find(c => c.id === answer.selected_choice_id);
+              if (selectedChoice?.is_correct) {
+                statusIndicator = "✓";
+                statusColor = "text-green-600";
+              } else {
+                statusIndicator = "✗";
+                statusColor = "text-red-600";
+              }
+            } else if (isAnswered) {
+              statusIndicator = "●";
+              statusColor = "text-green-600";
+            }
+
             return (
               <button
                 key={q.id}
                 onClick={() => setCurrentIndex(i)}
-                className={`flex w-full items-center gap-2 px-2 py-1 text-xs transition-colors ${
+                className={`grid w-full grid-cols-3 items-center text-center text-[11px] transition-all ${
                   isCurrent
-                    ? "bg-[hsl(var(--sidebar-bg))] text-white"
-                    : "text-foreground hover:bg-muted"
-                }`}
+                    ? "font-bold"
+                    : "hover:opacity-80"
+                } ${i % 2 === 0 ? "" : "bg-black/[0.03] dark:bg-white/[0.03]"}`}
+                style={
+                  isCurrent
+                    ? {
+                        background: "hsl(var(--exam-nav-selected))",
+                        color: "hsl(var(--exam-nav-selected-font))",
+                      }
+                    : {}
+                }
               >
-                <span className="w-6 text-right font-medium">{i + 1}</span>
-                <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${getStatusColor(q.id, i)}`} />
+                <span className="py-1.5">{i + 1}</span>
+                <span className={`py-1.5 ${isCurrent ? "" : statusColor}`}>
+                  {statusIndicator}
+                </span>
+                <span className="py-1.5">
+                  {isMarked && (
+                    <span className={isCurrent ? "" : "text-blue-500"}>⚑</span>
+                  )}
+                </span>
               </button>
             );
           })}
