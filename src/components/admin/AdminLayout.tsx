@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Users, Shield, Key, FileQuestion, StickyNote,
   BookOpen, Settings, ScrollText, CreditCard, BarChart3, Menu, X,
-  LogOut, ChevronDown, ChevronRight, Home, UserCog
+  LogOut, ChevronDown, ChevronRight, Home, UserCog, Library
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,6 +31,7 @@ const navItems: NavItem[] = [
   { label: "Questions", to: "/admin/questions", icon: FileQuestion },
   { label: "Notes", to: "/admin/notes", icon: StickyNote },
   { label: "Exams", to: "/admin/exams", icon: BookOpen },
+  { label: "Medical Library", to: "/admin/library", icon: Library },
   { label: "Activation Codes", to: "/admin/codes", icon: Key },
   { label: "Plans & Subs", to: "/admin/plans", icon: CreditCard },
   { label: "Analytics", to: "/admin/analytics", icon: BarChart3 },

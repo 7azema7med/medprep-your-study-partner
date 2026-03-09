@@ -46,6 +46,7 @@ import PlansSubscriptions from "./pages/admin/PlansSubscriptions";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AuditLogs from "./pages/admin/AuditLogs";
 import SiteSettings from "./pages/admin/SiteSettings";
+import LibraryManagement from "./pages/admin/LibraryManagement";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ const App = () => (
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="audit-logs" element={<AuditLogs />} />
               <Route path="settings" element={<SiteSettings />} />
+              <Route path="library" element={<LibraryManagement />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
