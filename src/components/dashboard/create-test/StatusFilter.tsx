@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-
 interface StatusFilterProps {
   selectedFilters: string[];
   onToggleFilter: (key: string) => void;
@@ -23,28 +21,17 @@ export function StatusFilter({ selectedFilters, onToggleFilter, filterCounts }: 
         {questionFilters.map((filter) => {
           const isActive = selectedFilters.includes(filter.key);
           return (
-            <motion.button
+            <button
               key={filter.key}
               onClick={() => onToggleFilter(filter.key)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all ${
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 isActive
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                  : "bg-muted text-muted-foreground hover:bg-muted-foreground/10 hover:text-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
               }`}
             >
-              {filter.label}
-              <span
-                className={`inline-flex min-w-[1.5rem] items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-semibold ${
-                  isActive
-                    ? "bg-primary-foreground/20 text-primary-foreground"
-                    : "bg-background text-muted-foreground"
-                }`}
-              >
-                {filterCounts[filter.key] || 0}
-              </span>
-            </motion.button>
+              {filter.label} ({filterCounts[filter.key] || 0})
+            </button>
           );
         })}
       </div>

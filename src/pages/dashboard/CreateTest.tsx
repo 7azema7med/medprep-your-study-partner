@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { 
-  Sparkles, ChevronRight, Home, FileQuestion, 
-  Loader2, Copy, CheckCircle2, Info
-} from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { ModeSelector } from "@/components/dashboard/create-test/ModeSelector";
 import { QuestionModeSelector } from "@/components/dashboard/create-test/QuestionModeSelector";
 import { SubjectSelector } from "@/components/dashboard/create-test/SubjectSelector";
@@ -46,13 +43,8 @@ export default function CreateTest() {
     systems.reduce((sum, s) => sum + s.question_count, 0);
 
   const filterCounts: Record<string, number> = {
-    all: totalAvailable,
-    unused: totalAvailable,
-    used: 0,
-    incorrect: 0,
-    marked: 0,
-    omitted: 0,
-    correct: 0,
+    all: totalAvailable, unused: totalAvailable,
+    used: 0, incorrect: 0, marked: 0, omitted: 0, correct: 0,
   };
 
   useEffect(() => {
@@ -82,17 +74,11 @@ export default function CreateTest() {
     }
   };
 
-  const toggleSubject = (id: string) => {
-    setSelectedSubjects((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
+  const toggleSubject = (id: string) =>
+    setSelectedSubjects((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
-  const toggleSystem = (id: string) => {
-    setSelectedSystems((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
+  const toggleSystem = (id: string) =>
+    setSelectedSystems((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
   const handleSelectAllSubjects = (checked: boolean) => {
     setSelectAllSubjects(checked);
@@ -110,7 +96,6 @@ export default function CreateTest() {
     if (questionMode === "custom" && customQuestionIds.length === 0) return;
 
     setIsGenerating(true);
-
     const { data: test, error } = await supabase
       .from("tests")
       .insert({
@@ -126,10 +111,7 @@ export default function CreateTest() {
       .single();
 
     setIsGenerating(false);
-
-    if (!error && test) {
-      navigate(`/dashboard/exam/${test.id}`);
-    }
+    if (!error && test) navigate(`/dashboard/exam/${test.id}`);
   };
 
   const canGenerate = questionMode === "standard"
@@ -139,214 +121,101 @@ export default function CreateTest() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading configuration...</p>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="animate-fade-in mx-auto max-w-4xl pb-10">
-      {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-        <Home className="h-4 w-4" />
-        <ChevronRight className="h-3 w-3" />
-        <span>QBank</span>
-        <ChevronRight className="h-3 w-3" />
-        <span className="font-medium text-foreground">Create Test</span>
-      </nav>
-
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Create Test</h1>
+    <div className="mx-auto max-w-2xl pb-10">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-foreground">Create Test</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Generate a custom block of questions for practice.
         </p>
       </div>
 
-      {/* Main Configuration Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="rounded-2xl border border-border bg-card shadow-card overflow-hidden"
-      >
-        {/* Card Header */}
-        <div className="border-b border-border bg-muted/30 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                <FileQuestion className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-foreground">Test Configuration</h2>
-                <p className="text-xs text-muted-foreground">
-                  Customize your practice session settings
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary">
-                {totalAvailable} questions available
-              </span>
-            </div>
-          </div>
+      <div className="rounded-xl border border-border bg-card divide-y divide-border">
+        {/* Test Name */}
+        <div className="px-5 py-4">
+          <h3 className="text-sm font-semibold text-foreground mb-2">Test Name <span className="font-normal text-muted-foreground">(optional)</span></h3>
+          <Input
+            value={testName}
+            onChange={(e) => setTestName(e.target.value)}
+            placeholder="e.g., Cardiology Review"
+            className="max-w-sm"
+          />
         </div>
 
-        {/* Card Content */}
-        <div className="divide-y divide-border">
-          {/* Test Name (Optional) */}
-          <Section>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-foreground">Test Name</h3>
-              <span className="text-xs text-muted-foreground">Optional</span>
-            </div>
-            <Input
-              value={testName}
-              onChange={(e) => setTestName(e.target.value)}
-              placeholder="e.g., Cardiology Review Session"
-              className="max-w-md"
-            />
-          </Section>
-
-          {/* Test Mode */}
-          <Section>
-            <ModeSelector mode={mode} onModeChange={setMode} />
-          </Section>
-
-          {/* Question Mode */}
-          <Section>
-            <QuestionModeSelector
-              questionMode={questionMode}
-              onQuestionModeChange={setQuestionMode}
-            />
-          </Section>
-
-          {/* Conditional Sections based on Question Mode */}
-          <AnimatePresence mode="wait">
-            {questionMode === "standard" ? (
-              <motion.div
-                key="standard"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {/* Status Filters */}
-                <Section>
-                  <StatusFilter
-                    selectedFilters={selectedFilters}
-                    onToggleFilter={toggleFilter}
-                    filterCounts={filterCounts}
-                  />
-                </Section>
-
-                {/* Subjects */}
-                <Section>
-                  <SubjectSelector
-                    subjects={subjects}
-                    selectedSubjects={selectedSubjects}
-                    onToggleSubject={toggleSubject}
-                    onSelectAll={handleSelectAllSubjects}
-                    selectAll={selectAllSubjects}
-                  />
-                </Section>
-
-                {/* Systems */}
-                <Section>
-                  <SystemSelector
-                    systems={systems}
-                    selectedSystems={selectedSystems}
-                    onToggleSystem={toggleSystem}
-                    onSelectAll={handleSelectAllSystems}
-                    selectAll={selectAllSystems}
-                  />
-                </Section>
-
-                {/* Number of Questions */}
-                <Section>
-                  <QuestionCountInput
-                    value={numQuestions}
-                    onChange={setNumQuestions}
-                  />
-                </Section>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="custom"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Section>
-                  <CustomModePanel
-                    maxQuestions={40}
-                    onValidQuestionsChange={setCustomQuestionIds}
-                  />
-                </Section>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Mode */}
+        <div className="px-5 py-4">
+          <ModeSelector mode={mode} onModeChange={setMode} />
         </div>
 
-        {/* Card Footer - Generate Button */}
-        <div className="border-t border-border bg-muted/20 px-6 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              {questionMode === "standard" ? (
-                <>
-                  <span>
-                    {selectedSubjects.length + selectedSystems.length} categories selected
-                  </span>
-                  <span className="text-border">•</span>
-                  <span>{numQuestions} questions</span>
-                </>
-              ) : (
-                <span>{customQuestionIds.length} Question IDs entered</span>
-              )}
-            </div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={handleGenerateTest}
-                disabled={!canGenerate || isGenerating}
-                size="lg"
-                className="gap-2 px-8 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-shadow"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4" />
-                    Generate Test
-                  </>
-                )}
-              </Button>
+        {/* Question Mode */}
+        <div className="px-5 py-4">
+          <QuestionModeSelector questionMode={questionMode} onQuestionModeChange={setQuestionMode} />
+        </div>
+
+        {/* Conditional content */}
+        <AnimatePresence mode="wait">
+          {questionMode === "standard" ? (
+            <motion.div
+              key="standard"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="divide-y divide-border"
+            >
+              <div className="px-5 py-4">
+                <StatusFilter selectedFilters={selectedFilters} onToggleFilter={toggleFilter} filterCounts={filterCounts} />
+              </div>
+              <div className="px-5 py-4">
+                <SubjectSelector subjects={subjects} selectedSubjects={selectedSubjects} onToggleSubject={toggleSubject} onSelectAll={handleSelectAllSubjects} selectAll={selectAllSubjects} />
+              </div>
+              <div className="px-5 py-4">
+                <SystemSelector systems={systems} selectedSystems={selectedSystems} onToggleSystem={toggleSystem} onSelectAll={handleSelectAllSystems} selectAll={selectAllSystems} />
+              </div>
+              <div className="px-5 py-4">
+                <QuestionCountInput value={numQuestions} onChange={setNumQuestions} />
+              </div>
             </motion.div>
-          </div>
-        </div>
-      </motion.div>
+          ) : (
+            <motion.div
+              key="custom"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="px-5 py-4">
+                <CustomModePanel maxQuestions={40} onValidQuestionsChange={setCustomQuestionIds} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Info Footer */}
-      <div className="mt-6 flex items-start gap-3 rounded-xl border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
-        <Info className="h-4 w-4 shrink-0 mt-0.5" />
-        <div>
-          <p className="font-medium text-foreground mb-1">About Question & Test IDs</p>
-          <p>
-            Each question has a unique Question ID (e.g., 104582) that you can share with study partners.
-            After generating a test, you'll receive a Test ID that others can use to create the same block.
+        {/* Footer */}
+        <div className="px-5 py-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">
+            {questionMode === "standard"
+              ? `${selectedSubjects.length + selectedSystems.length} selected · ${numQuestions} questions`
+              : `${customQuestionIds.length} Question IDs`}
           </p>
+          <Button
+            onClick={handleGenerateTest}
+            disabled={!canGenerate || isGenerating}
+            className="gap-2"
+          >
+            {isGenerating ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Generating...</>
+            ) : (
+              <><Sparkles className="h-4 w-4" /> Generate Test</>
+            )}
+          </Button>
         </div>
       </div>
     </div>
   );
-}
-
-function Section({ children }: { children: React.ReactNode }) {
-  return <div className="px-6 py-5">{children}</div>;
 }
