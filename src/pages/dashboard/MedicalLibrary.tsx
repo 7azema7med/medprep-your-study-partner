@@ -121,7 +121,7 @@ export default function MedicalLibrary() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] -m-5 border-t border-border">
+    <div className="flex h-[calc(100vh-5.5rem)] -m-5">
       {/* Library Sidebar */}
       <LibrarySidebar
         categories={categories}
