@@ -5,7 +5,7 @@ import { useMedicalLibrary } from "@/hooks/useMedicalLibrary";
 import { LibrarySidebar } from "@/components/library/LibrarySidebar";
 import { ArticleReader } from "@/components/library/ArticleReader";
 import { ArticleToolbar } from "@/components/library/ArticleToolbar";
-import { UtilityBar } from "@/components/library/UtilityBar";
+
 
 export default function MedicalLibrary() {
   const { user } = useAuth();
@@ -148,7 +148,7 @@ export default function MedicalLibrary() {
           className="flex-1 overflow-y-auto scroll-smooth"
         >
           <div className="px-6 py-6 lg:px-12 lg:py-8">
-            <div className="mx-auto max-w-3xl pb-24">
+            <div className="mx-auto max-w-3xl pb-8">
               {selectedArticle ? (
                 <>
                   <h1 className="mb-4 text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
@@ -216,10 +216,6 @@ export default function MedicalLibrary() {
             </div>
           </div>
         </div>
-
-        {/* Bottom Utility Bar */}
-        <UtilityBar />
-
       </div>
     </div>
   );

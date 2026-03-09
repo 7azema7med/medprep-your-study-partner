@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Search, Bookmark, FileText, Folder, ChevronDown, ChevronRight, BookOpen, Hash } from "lucide-react";
 import { MedicalLibraryCategory, MedicalLibraryArticle, UserBookmark, MedicalLibrarySection } from "@/hooks/useMedicalLibrary";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -35,33 +35,6 @@ export function LibrarySidebar({
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showSections, setShowSections] = useState(true);
-  const [sectionsPanelHeight, setSectionsPanelHeight] = useState(220);
-  const isDragging = useRef(false);
-  const startY = useRef(0);
-  const startHeight = useRef(0);
-
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    isDragging.current = true;
-    startY.current = e.clientY;
-    startHeight.current = sectionsPanelHeight;
-
-    const handleDragMove = (ev: MouseEvent) => {
-      if (!isDragging.current) return;
-      const delta = ev.clientY - startY.current;
-      const newHeight = Math.max(80, Math.min(500, startHeight.current + delta));
-      setSectionsPanelHeight(newHeight);
-    };
-
-    const handleDragEnd = () => {
-      isDragging.current = false;
-      document.removeEventListener('mousemove', handleDragMove);
-      document.removeEventListener('mouseup', handleDragEnd);
-    };
-
-    document.addEventListener('mousemove', handleDragMove);
-    document.addEventListener('mouseup', handleDragEnd);
-  }, [sectionsPanelHeight]);
 
   // Auto-expand category when article is selected
   useEffect(() => {
@@ -107,7 +80,6 @@ export function LibrarySidebar({
   if (showBookmarks) {
     return (
       <aside className="flex w-80 min-w-[280px] max-w-[360px] shrink-0 flex-col border-r border-border bg-card">
-        {/* Search Field */}
         <div className="p-3 border-b border-border">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -121,7 +93,6 @@ export function LibrarySidebar({
           </div>
         </div>
 
-        {/* Bookmarks Header */}
         <button 
           onClick={() => setShowBookmarks(false)}
           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground bg-primary/10 border-b border-border"
@@ -133,7 +104,6 @@ export function LibrarySidebar({
           </span>
         </button>
         
-        {/* Bookmarks List */}
         <ScrollArea className="flex-1">
           <div className="p-2">
             {bookmarks.map(bookmark => (
@@ -206,66 +176,53 @@ export function LibrarySidebar({
         )}
       </button>
 
+      {/* Article Sections */}
       {selectedArticleId && sections.length > 0 && (
-        <div className="flex flex-col" style={{ height: showSections ? sectionsPanelHeight : 'auto' }}>
+        <div className="border-b border-border">
           <button
             onClick={() => setShowSections(!showSections)}
-            className="flex items-center gap-2 w-full px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:bg-muted/30 shrink-0"
+            className="flex items-center gap-2 w-full px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:bg-muted/30"
           >
             {showSections ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
             Article Sections
           </button>
           
           {showSections && (
-            <ScrollArea className="flex-1 min-h-0">
-              <div className="pb-2 px-2">
-                {sections.map(section => {
-                  const isActive = activeSectionId === section.id;
-                  return (
-                    <button
-                      key={section.id}
-                      onClick={() => onSectionClick?.(section.id)}
-                      className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-all relative ${
-                        isActive 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                      }`}
-                    >
-                      {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r" />
-                      )}
-                      <Hash className={`h-3 w-3 flex-shrink-0 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                      <span className="text-sm truncate">{section.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </ScrollArea>
+            <div className="pb-2 px-2">
+              {sections.map(section => {
+                const isActive = activeSectionId === section.id;
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => onSectionClick?.(section.id)}
+                    className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-all relative ${
+                      isActive 
+                        ? "bg-primary/10 text-primary font-medium" 
+                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    }`}
+                  >
+                    {isActive && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r" />
+                    )}
+                    <Hash className={`h-3 w-3 flex-shrink-0 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <span className="text-sm truncate">{section.title}</span>
+                  </button>
+                );
+              })}
+            </div>
           )}
-        </div>
-      )}
-
-      {/* Draggable Divider */}
-      {selectedArticleId && sections.length > 0 && showSections && (
-        <div
-          onMouseDown={handleDragStart}
-          className="shrink-0 h-1.5 cursor-row-resize group flex items-center justify-center hover:bg-primary/10 transition-colors border-y border-border"
-        >
-          <div className="w-8 h-0.5 rounded-full bg-muted-foreground/30 group-hover:bg-primary/50 transition-colors" />
         </div>
       )}
 
       {/* Navigation Tree */}
       <ScrollArea className="flex-1">
         <div className="p-2">
-          {/* Welcome item */}
           <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
             <BookOpen className="h-4 w-4 text-primary" />
             Welcome To The Medical Library
           </button>
           
           {searchQuery ? (
-            /* Search Results */
             <div className="mt-2">
               <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Search Results ({filteredArticles.length})
@@ -273,7 +230,6 @@ export function LibrarySidebar({
               {filteredArticles.map(article => {
                 const isSelected = selectedArticleId === article.id;
                 const readStatus = getReadStatus(article.id);
-                
                 return (
                   <button
                     key={article.id}
@@ -307,13 +263,11 @@ export function LibrarySidebar({
               )}
             </div>
           ) : (
-            /* Category Tree */
             <div className="mt-2 space-y-1">
               {rootCategories.map(category => {
                 const subcategories = getSubcategories(category.id);
                 const categoryArticles = getArticlesByCategory(category.id);
                 const isExpanded = expandedCategories.includes(category.id);
-                
                 return (
                   <div key={category.id}>
                     <button 
@@ -324,23 +278,16 @@ export function LibrarySidebar({
                       <span className="flex-1 text-left">{category.name}</span>
                       {(subcategories.length > 0 || categoryArticles.length > 0) && (
                         <span className="text-muted-foreground">
-                          {isExpanded ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
+                          {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </span>
                       )}
                     </button>
                     
-                    {/* Expanded Content */}
                     {isExpanded && (
                       <div className="ml-4 mt-1 space-y-0.5 border-l border-border pl-3">
-                        {/* Subcategories */}
                         {subcategories.map(subcategory => {
                           const subCategoryArticles = getArticlesByCategory(subcategory.id);
                           const isSubExpanded = expandedCategories.includes(subcategory.id);
-                          
                           return (
                             <div key={subcategory.id}>
                               <button 
@@ -351,22 +298,15 @@ export function LibrarySidebar({
                                 <span className="flex-1 text-left">{subcategory.name}</span>
                                 {subCategoryArticles.length > 0 && (
                                   <span className="text-muted-foreground">
-                                    {isSubExpanded ? (
-                                      <ChevronDown className="h-3.5 w-3.5" />
-                                    ) : (
-                                      <ChevronRight className="h-3.5 w-3.5" />
-                                    )}
+                                    {isSubExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                                   </span>
                                 )}
                               </button>
-                              
-                              {/* Articles in subcategory */}
                               {isSubExpanded && (
                                 <div className="ml-4 mt-1 space-y-0.5 border-l border-border pl-3">
                                   {subCategoryArticles.map(article => {
                                     const isSelected = selectedArticleId === article.id;
                                     const readStatus = getReadStatus(article.id);
-                                    
                                     return (
                                       <button
                                         key={article.id}
@@ -392,11 +332,9 @@ export function LibrarySidebar({
                           );
                         })}
                         
-                        {/* Articles directly in this category */}
                         {categoryArticles.map(article => {
                           const isSelected = selectedArticleId === article.id;
                           const readStatus = getReadStatus(article.id);
-                          
                           return (
                             <button
                               key={article.id}
