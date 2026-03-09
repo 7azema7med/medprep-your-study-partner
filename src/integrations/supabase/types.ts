@@ -458,31 +458,43 @@ export type Database = {
       }
       profiles: {
         Row: {
+          academic_year: string | null
           activation_code: string | null
           country: string | null
           created_at: string
+          full_name: string | null
           id: string
           phone: string | null
+          semester: string | null
+          university_id: string | null
           updated_at: string
           user_id: string
           username: string
         }
         Insert: {
+          academic_year?: string | null
           activation_code?: string | null
           country?: string | null
           created_at?: string
+          full_name?: string | null
           id?: string
           phone?: string | null
+          semester?: string | null
+          university_id?: string | null
           updated_at?: string
           user_id: string
           username: string
         }
         Update: {
+          academic_year?: string | null
           activation_code?: string | null
           country?: string | null
           created_at?: string
+          full_name?: string | null
           id?: string
           phone?: string | null
+          semester?: string | null
+          university_id?: string | null
           updated_at?: string
           user_id?: string
           username?: string
@@ -669,6 +681,7 @@ export type Database = {
       }
       questions: {
         Row: {
+          academic_year: string | null
           created_at: string
           difficulty: string | null
           explanation: string | null
@@ -677,11 +690,13 @@ export type Database = {
           public_id: number
           question_set_id: string | null
           question_text: string
+          semester: string | null
           subject_id: string | null
           system_id: string | null
           topic_id: string | null
         }
         Insert: {
+          academic_year?: string | null
           created_at?: string
           difficulty?: string | null
           explanation?: string | null
@@ -690,11 +705,13 @@ export type Database = {
           public_id?: number
           question_set_id?: string | null
           question_text: string
+          semester?: string | null
           subject_id?: string | null
           system_id?: string | null
           topic_id?: string | null
         }
         Update: {
+          academic_year?: string | null
           created_at?: string
           difficulty?: string | null
           explanation?: string | null
@@ -703,6 +720,7 @@ export type Database = {
           public_id?: number
           question_set_id?: string | null
           question_text?: string
+          semester?: string | null
           subject_id?: string | null
           system_id?: string | null
           topic_id?: string | null
@@ -794,19 +812,25 @@ export type Database = {
       subjects: {
         Row: {
           category: string
+          description: string | null
           id: string
+          is_active: boolean | null
           name: string
           question_count: number
         }
         Insert: {
           category?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name: string
           question_count?: number
         }
         Update: {
           category?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name?: string
           question_count?: number
         }
@@ -856,23 +880,75 @@ export type Database = {
           },
         ]
       }
+      subsystems: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          system_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          system_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          system_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subsystems_system_id_fkey"
+            columns: ["system_id"]
+            isOneToOne: false
+            referencedRelation: "systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       systems: {
         Row: {
           created_at: string
+          description: string | null
           id: string
+          is_active: boolean | null
           name: string
+          subject_id: string | null
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name: string
+          subject_id?: string | null
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
+          is_active?: boolean | null
           name?: string
+          subject_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "systems_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_questions: {
         Row: {
@@ -1096,6 +1172,48 @@ export type Database = {
             columns: ["section_id"]
             isOneToOne: false
             referencedRelation: "medical_library_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_navigation_preferences: {
+        Row: {
+          collapsed: boolean | null
+          created_at: string | null
+          id: string
+          subject_id: string | null
+          system_id: string | null
+          user_id: string
+        }
+        Insert: {
+          collapsed?: boolean | null
+          created_at?: string | null
+          id?: string
+          subject_id?: string | null
+          system_id?: string | null
+          user_id: string
+        }
+        Update: {
+          collapsed?: boolean | null
+          created_at?: string | null
+          id?: string
+          subject_id?: string | null
+          system_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_navigation_preferences_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_navigation_preferences_system_id_fkey"
+            columns: ["system_id"]
+            isOneToOne: false
+            referencedRelation: "systems"
             referencedColumns: ["id"]
           },
         ]

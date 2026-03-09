@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import {
   BookOpen, Home, FileQuestion, FilePlus, History, BarChart3,
   TrendingUp, FileText, LineChart, Search, StickyNote,
-  Library, BookMarked, ChevronDown, ChevronRight, Menu, X, LogOut, User, Settings, Shield
+  Library, BookMarked, ChevronDown, ChevronRight, Menu, X, LogOut, User, Settings, Shield, Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -20,6 +20,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", to: "/dashboard", icon: Home },
+  { label: "Browse Topics", to: "/dashboard/browse", icon: Layers },
   {
     label: "QBank",
     icon: FileQuestion,

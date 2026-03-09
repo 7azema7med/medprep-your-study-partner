@@ -24,6 +24,7 @@ import Reports from "./pages/dashboard/Reports";
 import Graphs from "./pages/dashboard/Graphs";
 import SearchQuestions from "./pages/dashboard/SearchQuestions";
 import Notes from "./pages/dashboard/Notes";
+import BrowseContent from "./pages/dashboard/BrowseContent";
 import MedicalLibrary from "./pages/dashboard/MedicalLibrary";
 import MyNotebook from "./pages/dashboard/MyNotebook";
 import Settings from "./pages/dashboard/Settings";
@@ -78,6 +79,7 @@ const App = () => (
               <Route path="graphs" element={<Graphs />} />
               <Route path="search" element={<SearchQuestions />} />
               <Route path="notes" element={<Notes />} />
+              <Route path="browse" element={<BrowseContent />} />
               <Route path="medical-library" element={<MedicalLibrary />} />
               <Route path="my-notebook" element={<MyNotebook />} />
               <Route path="settings" element={<Settings />} />
