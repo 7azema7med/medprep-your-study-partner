@@ -1,10 +1,12 @@
-import { StickyNote, Zap, MessageCircle, Bookmark as BookmarkIcon, Image as ImageIcon } from "lucide-react";
+import { StickyNote, Zap, MessageCircle, Bookmark as BookmarkIcon, Search, Image as ImageIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface UtilityBarProps {
   onNotes?: () => void;
   onQuickAction?: () => void;
   onComments?: () => void;
   onBookmarks?: () => void;
+  onSearch?: () => void;
   onAttachments?: () => void;
 }
 
@@ -13,49 +15,37 @@ export function UtilityBar({
   onQuickAction,
   onComments,
   onBookmarks,
+  onSearch,
   onAttachments
 }: UtilityBarProps) {
+  const buttons = [
+    { icon: StickyNote, label: "Notes", onClick: onNotes },
+    { icon: Zap, label: "Quick Actions", onClick: onQuickAction },
+    { icon: MessageCircle, label: "Comments", onClick: onComments },
+    { icon: BookmarkIcon, label: "Bookmarks", onClick: onBookmarks },
+    { icon: Search, label: "Search Article", onClick: onSearch },
+    { icon: ImageIcon, label: "Attachments", onClick: onAttachments },
+  ];
+
   return (
-    <div className="absolute bottom-10 left-1/2 flex -translate-x-1/2 items-center gap-8 rounded-full border border-border bg-background px-8 py-3 shadow-sm">
-      <button 
-        onClick={onNotes}
-        className="text-muted-foreground hover:text-primary transition-colors"
-        title="Notes"
-      >
-        <StickyNote className="h-[22px] w-[22px] stroke-[1.5]" />
-      </button>
-      
-      <button 
-        onClick={onQuickAction}
-        className="text-muted-foreground hover:text-primary transition-colors"
-        title="Quick Actions"
-      >
-        <Zap className="h-[22px] w-[22px] stroke-[1.5]" />
-      </button>
-      
-      <button 
-        onClick={onComments}
-        className="text-muted-foreground hover:text-primary transition-colors"
-        title="Comments"
-      >
-        <MessageCircle className="h-[22px] w-[22px] stroke-[1.5]" />
-      </button>
-      
-      <button 
-        onClick={onBookmarks}
-        className="text-muted-foreground hover:text-primary transition-colors"
-        title="Bookmarks"
-      >
-        <BookmarkIcon className="h-[22px] w-[22px] stroke-[1.5]" />
-      </button>
-      
-      <button 
-        onClick={onAttachments}
-        className="text-muted-foreground hover:text-primary transition-colors"
-        title="Attachments"
-      >
-        <ImageIcon className="h-[22px] w-[22px] stroke-[1.5]" />
-      </button>
-    </div>
+    <TooltipProvider delayDuration={300}>
+      <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-card/95 backdrop-blur-sm px-3 py-2 shadow-lg">
+        {buttons.map((button, index) => (
+          <Tooltip key={button.label}>
+            <TooltipTrigger asChild>
+              <button 
+                onClick={button.onClick}
+                className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all"
+              >
+                <button.icon className="h-5 w-5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs">
+              {button.label}
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </TooltipProvider>
   );
 }
