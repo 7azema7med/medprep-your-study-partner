@@ -68,9 +68,9 @@ export function LibrarySidebar({
   const getStatusIndicator = (status: 'unread' | 'in_progress' | 'read') => {
     switch (status) {
       case 'read':
-        return <div className="h-2 w-2 rounded-full bg-green-500 flex-shrink-0" title="Read" />;
+        return <div className="h-2 w-2 rounded-full bg-success flex-shrink-0" title="Read" />;
       case 'in_progress':
-        return <div className="h-2 w-2 rounded-full bg-amber-500 flex-shrink-0" title="In Progress" />;
+        return <div className="h-2 w-2 rounded-full bg-warning flex-shrink-0" title="In Progress" />;
       default:
         return null;
     }
