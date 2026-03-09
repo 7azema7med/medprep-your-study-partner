@@ -216,9 +216,7 @@ export default function MedicalLibrary() {
             </div>
           </div>
         </div>
-
-        {/* Bottom Utility Bar */}
-        <UtilityBar />
+      </div>
 
       </div>
     </div>
