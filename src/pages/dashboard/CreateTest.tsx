@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Sparkles, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { ModeSelector } from "@/components/dashboard/create-test/ModeSelector";
 import { QuestionModeSelector } from "@/components/dashboard/create-test/QuestionModeSelector";
 import { SubjectSelector } from "@/components/dashboard/create-test/SubjectSelector";
@@ -96,22 +97,106 @@ export default function CreateTest() {
     if (questionMode === "custom" && customQuestionIds.length === 0) return;
 
     setIsGenerating(true);
-    const { data: test, error } = await supabase
-      .from("tests")
-      .insert({
-        user_id: user.id,
-        test_name: testName || null,
-        mode,
-        question_mode: questionMode,
-        num_questions: questionMode === "custom" ? customQuestionIds.length : numQuestions,
-        source_mode: questionMode,
-        custom_question_ids: questionMode === "custom" ? customQuestionIds : null,
-      })
-      .select()
-      .single();
 
-    setIsGenerating(false);
-    if (!error && test) navigate(`/dashboard/exam/${test.id}`);
+    try {
+      let questionIds: string[] = [];
+
+      if (questionMode === "standard") {
+        // Fetch questions matching selected subjects/systems
+        let query = supabase
+          .from("questions")
+          .select("id")
+          .eq("is_active", true);
+
+        // Build OR filter for subjects and systems
+        const orFilters: string[] = [];
+        if (selectedSubjects.length > 0) {
+          orFilters.push(`subject_id.in.(${selectedSubjects.join(",")})`);
+        }
+        if (selectedSystems.length > 0) {
+          orFilters.push(`system_id.in.(${selectedSystems.join(",")})`);
+        }
+
+        if (orFilters.length > 0) {
+          query = query.or(orFilters.join(","));
+        }
+
+        const { data: availableQuestions, error: qError } = await query.limit(1000);
+
+        if (qError) throw qError;
+
+        if (!availableQuestions || availableQuestions.length === 0) {
+          toast.error("No questions found matching your criteria.");
+          setIsGenerating(false);
+          return;
+        }
+
+        // Shuffle and pick requested number
+        const shuffled = availableQuestions.sort(() => Math.random() - 0.5);
+        questionIds = shuffled.slice(0, numQuestions).map((q) => q.id);
+      } else {
+        // Custom mode - fetch questions by public_id
+        const numericIds = customQuestionIds.map(Number);
+        const { data: customQuestions, error: cError } = await supabase
+          .from("questions")
+          .select("id")
+          .in("public_id", numericIds)
+          .eq("is_active", true);
+
+        if (cError) throw cError;
+
+        if (!customQuestions || customQuestions.length === 0) {
+          toast.error("No valid questions found for the given IDs.");
+          setIsGenerating(false);
+          return;
+        }
+
+        questionIds = customQuestions.map((q) => q.id);
+      }
+
+      // Create the test
+      const { data: test, error: testError } = await supabase
+        .from("tests")
+        .insert({
+          user_id: user.id,
+          test_name: testName || null,
+          mode,
+          question_mode: questionMode,
+          num_questions: questionIds.length,
+          source_mode: questionMode,
+          custom_question_ids: questionMode === "custom" ? customQuestionIds : null,
+          filters_json: questionMode === "standard" ? {
+            subjects: selectedSubjects,
+            systems: selectedSystems,
+            filters: selectedFilters,
+          } : null,
+        })
+        .select()
+        .single();
+
+      if (testError) throw testError;
+
+      // Insert test_questions with proper ordering
+      const testQuestions = questionIds.map((qId, index) => ({
+        test_id: test.id,
+        question_id: qId,
+        question_order: index + 1,
+      }));
+
+      const { error: tqError } = await supabase
+        .from("test_questions")
+        .insert(testQuestions);
+
+      if (tqError) throw tqError;
+
+      toast.success(`Test created with ${questionIds.length} questions`);
+      navigate(`/dashboard/exam/${test.id}`);
+    } catch (error: any) {
+      console.error("Error creating test:", error);
+      toast.error(error.message || "Failed to create test");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const canGenerate = questionMode === "standard"

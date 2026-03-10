@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Search, Trash2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { adminApi } from "@/lib/admin-api";
 import { toast } from "sonner";
 
 export default function ExamManagement() {
@@ -23,16 +24,20 @@ export default function ExamManagement() {
   useEffect(() => { fetchTests(); }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this test?")) return;
-    await supabase.from("test_questions").delete().eq("test_id", id);
-    await supabase.from("tests").delete().eq("id", id);
-    toast.success("Test deleted");
-    fetchTests();
+    if (!confirm("Delete this test and all its question records?")) return;
+    try {
+      await adminApi.deleteTest(id);
+      toast.success("Test deleted");
+      fetchTests();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to delete test");
+    }
   };
 
   const filtered = tests.filter(t =>
     t.test_name?.toLowerCase().includes(search.toLowerCase()) ||
-    t.mode?.toLowerCase().includes(search.toLowerCase())
+    t.mode?.toLowerCase().includes(search.toLowerCase()) ||
+    String(t.public_id).includes(search)
   );
 
   return (
@@ -50,13 +55,14 @@ export default function ExamManagement() {
         <CardHeader className="pb-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search tests..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+            <Input placeholder="Search tests by name, mode, or ID..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Mode</TableHead>
                 <TableHead>Questions</TableHead>
@@ -68,20 +74,21 @@ export default function ExamManagement() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No tests found</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No tests found</TableCell></TableRow>
               ) : filtered.map(t => (
                 <TableRow key={t.id}>
+                  <TableCell className="font-mono text-xs text-muted-foreground">{t.public_id}</TableCell>
                   <TableCell className="font-medium text-foreground">{t.test_name || "Untitled"}</TableCell>
                   <TableCell><Badge variant="outline" className="text-[10px]">{t.mode}</Badge></TableCell>
                   <TableCell className="text-sm">{t.num_questions}</TableCell>
                   <TableCell>
-                    <Badge variant={t.status === "completed" ? "default" : t.status === "in_progress" ? "secondary" : "outline"} className="text-[10px]">
+                    <Badge variant={t.status === "submitted" ? "default" : t.status === "in_progress" ? "secondary" : "outline"} className="text-[10px]">
                       {t.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm">{t.score != null ? `${t.score}%` : "—"}</TableCell>
+                  <TableCell className="text-sm">{t.score != null ? `${Math.round(Number(t.score))}%` : "—"}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">{new Date(t.created_at).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(t.id)}>
