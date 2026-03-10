@@ -23,22 +23,50 @@ export default function OverallPerformance() {
   useEffect(() => {
     if (!user) return;
     async function fetch() {
-      const [subRes, testRes] = await Promise.all([
+      const [subRes, testsWithId] = await Promise.all([
         supabase.from("subjects").select("name, question_count").eq("category", "subject"),
-        supabase.from("tests").select("score, num_questions, status").eq("user_id", user!.id).eq("status", "submitted"),
+        supabase.from("tests").select("id, score, num_questions, status").eq("user_id", user!.id).eq("status", "submitted"),
       ]);
 
       const subs = subRes.data || [];
-      const tests = testRes.data || [];
+      const tests = testsWithId.data || [];
       const total = subs.reduce((s, r) => s + r.question_count, 0);
-      const ans = tests.reduce((s, t) => s + t.num_questions, 0);
-      const cor = tests.reduce((s, t) => s + Math.round((Number(t.score || 0) / 100) * t.num_questions), 0);
+
+      // Get real per-question results
+      let realCorrect = 0;
+      let realTotal = 0;
+      const subjectMap: Record<string, { correct: number; total: number }> = {};
+
+      if (tests.length > 0) {
+        const { data: tqs } = await supabase
+          .from("test_questions")
+          .select("is_correct, questions(subjects(name))")
+          .in("test_id", tests.map(t => t.id))
+          .not("is_correct", "is", null);
+
+        (tqs || []).forEach((tq: any) => {
+          realTotal++;
+          if (tq.is_correct) realCorrect++;
+          const name = tq.questions?.subjects?.name;
+          if (name) {
+            if (!subjectMap[name]) subjectMap[name] = { correct: 0, total: 0 };
+            subjectMap[name].total++;
+            if (tq.is_correct) subjectMap[name].correct++;
+          }
+        });
+      }
 
       setTotalQ(total);
-      setAnswered(ans);
-      setCorrect(cor);
-      setIncorrect(ans - cor);
-      setSubjects(subs.map((s) => ({ name: s.name, correct: Math.round(s.question_count * 0.6), total: s.question_count })));
+      setAnswered(realTotal);
+      setCorrect(realCorrect);
+      setIncorrect(realTotal - realCorrect);
+      setSubjects(
+        subs.map((s) => ({
+          name: s.name,
+          correct: subjectMap[s.name]?.correct || 0,
+          total: subjectMap[s.name]?.total || 0,
+        }))
+      );
       setLoading(false);
     }
     fetch();
@@ -49,7 +77,6 @@ export default function OverallPerformance() {
   }
 
   const scorePercent = answered > 0 ? Math.round((correct / answered) * 100) : 0;
-  const omitted = answered > 0 ? 0 : 0;
 
   const statCards = [
     { label: "Total Questions", value: totalQ, icon: Target, color: "text-primary" },
@@ -81,18 +108,22 @@ export default function OverallPerformance() {
           <CardTitle className="text-sm font-semibold">Performance by Subject</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {subjects.map((s) => {
-            const pct = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
-            return (
-              <div key={s.name}>
-                <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="text-foreground">{s.name}</span>
-                  <span className="font-semibold text-muted-foreground">{pct}% ({s.correct}/{s.total})</span>
+          {subjects.filter(s => s.total > 0).length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">No subject performance data yet. Complete some tests first.</p>
+          ) : (
+            subjects.filter(s => s.total > 0).map((s) => {
+              const pct = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
+              return (
+                <div key={s.name}>
+                  <div className="mb-1 flex items-center justify-between text-sm">
+                    <span className="text-foreground">{s.name}</span>
+                    <span className="font-semibold text-muted-foreground">{pct}% ({s.correct}/{s.total})</span>
+                  </div>
+                  <Progress value={pct} className="h-2" />
                 </div>
-                <Progress value={pct} className="h-2" />
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </CardContent>
       </Card>
     </div>
